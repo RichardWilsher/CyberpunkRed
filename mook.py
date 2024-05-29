@@ -1,4 +1,3 @@
-import numpy
 import math
 
 class mook(object):
@@ -19,15 +18,6 @@ class mook(object):
     seriouslywounded = 0
     deathsave = 0
     armourmodifier = 0
-    HPTable = numpy.array([[20,25,25,30,30,35,35,40,40,45,45,50,50,55],
-                           [25,25,30,30,35,35,40,40,45,45,50,50,55,55],
-                           [25,30,30,35,35,40,40,45,45,50,50,55,55,60],
-                           [30,30,35,35,40,40,45,45,50,50,55,55,60,60],
-                           [30,35,35,40,40,45,45,50,50,55,55,60,60,65],
-                           [35,35,40,40,45,45,50,50,55,55,60,60,65,65],
-                           [35,40,40,45,45,50,50,55,55,60,60,65,65,70],
-                           [40,40,45,45,50,50,55,55,60,60,65,65,70,70],
-                           [40,45,45,50,50,55,55,60,60,65,65,70,70,75]])
 
 
     def __init__(self, name, type, rep, generic, headarmour, bodyarmour, stats, weapons, role, skills, equipment, cyberwear, location, will, body, armourmodifier):
@@ -44,7 +34,7 @@ class mook(object):
         self.location = location
         self.role = role
         self.skills = skills
-        self.hp = self.HPTable[int(will)-2][int(body)-2]
+        self.hp = 10 + (5 *(math.ceil((int(body) + int(will))/2)))
         self.seriouslywounded = math.ceil(self.hp/2)
         self.deathsave = body
         self.armourmodifier = armourmodifier

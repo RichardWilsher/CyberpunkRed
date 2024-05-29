@@ -1,3 +1,4 @@
 /dbsettings.json
 /net_architecture.py
 /__pycache__
+/.gitignore
