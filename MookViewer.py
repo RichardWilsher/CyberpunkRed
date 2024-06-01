@@ -102,7 +102,7 @@ def loadmooks(id):
     for index,equipment in enumerate(equipment):
         for equipmentTitle in equipmentTable:
             if equipmentTitle[0] == equipment[2]:
-                printStr = equipmentTitle[1]
+                printStr = equipmentTitle[2]
                 if equipment[3] != '0':
                     printStr += " x" + str(equipment[3])
                 if equipment[4] != None:
@@ -114,7 +114,7 @@ def loadmooks(id):
     for index,cyberwear in enumerate(cyberwear):
         for cyberwearTitle in cyberwearTable:
             if cyberwearTitle[0] == cyberwear[2]:
-                printStr = cyberwearTitle[1]
+                printStr = cyberwearTitle[2]
                 if cyberwear[3] != '0':
                     printStr += " x" + str(cyberwear[3])
                 if cyberwear[4] != None:
