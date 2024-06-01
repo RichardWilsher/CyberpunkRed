@@ -1,8 +1,8 @@
+# Program to add and track initative values for Cyberpunk Red
+
 import tkinter as tk
 from tkinter import ttk 
 import random
-
-# to do, add in tkinter controls at manually add participants
 
 def initaliseinitatives(initativelist):
     # method to initialise initative array
@@ -25,22 +25,9 @@ def moveup(initativelist, roll, name):
         initativelist = moveup(initativelist, roll-1, oldname)
     return initativelist
 
-def addinitiativevalue(initativelist, roll, name):
-    # method to add a value to initative
-    if initativelist[roll] == "empty": 
-        initativelist[roll] = name
-    else:
-        oldname = initativelist[roll]
-        order = random.randrange(1,3)
-        if order == 1:
-            initativelist[roll] = name
-            initativelist = moveup(initativelist, roll-1, oldname)
-        else: 
-            initativelist = moveup(initativelist, roll-1, name)
-    return initativelist
-
 def filllistbox(initativelist):
     # method to fill the listbox
+    listbox.delete(0,'end')
     newlist = []
     newlist = reverselist(initativelist)
     index = 0
@@ -66,12 +53,27 @@ def items_selected(event):
             initative_textbox.delete(0,'end')
             initative_textbox.insert('end', index)
 
+def addinitiativevalue(initativelist, roll, name):
+    # method to add a value to initative
+    if initativelist[roll] == "empty": 
+        initativelist[roll] = name
+    else:
+        oldname = initativelist[roll]
+        order = random.randrange(1,3)
+        if order == 1:
+            initativelist[roll] = name
+            initativelist = moveup(initativelist, roll-1, oldname)
+        else: 
+            initativelist = moveup(initativelist, roll-1, name)
+    filllistbox(initativelist)
+    return initativelist
+
 #declare initative list array
 initativelist = []
 
 # setup the tkinter window
 win = tk.Tk()
-win.geometry("600x300")
+win.geometry("500x220")
 win.title("Cyberpunk Initative Tracker")
 
 #setup the listbox and scrollbar
@@ -90,7 +92,9 @@ initative_label = tk.Label(win, text="Initative:", font=("Arial", 12), bg='#fff'
 initative_label.place(x=240, y=55)
 initative_textbox = tk.Entry(win, font=("Arial", 12), bg='#fff', fg='#000')
 initative_textbox.place(x=305, y=55)
-
+# setup the buttons
+add_button = tk.Button(win, text="Add", font=("Arial", 12), bg='#fff', fg='#000', command=lambda: addinitiativevalue(initativelist, int(initative_textbox.get()), str(name_textbox.get())))
+add_button.place(x=240, y=85)
 # pack components
 listbox.pack()
 scrollbar.pack()
@@ -100,13 +104,5 @@ scrollbar.place(x=200,y=5, height=200, width=20)
 
 # add initative values
 initativelist = initaliseinitatives(initativelist)
-initativelist = addinitiativevalue(initativelist, 16, "Forty")
-initativelist = addinitiativevalue(initativelist, 12, "Grease")
-initativelist = addinitiativevalue(initativelist, 11, "Sanjay")
-initativelist = addinitiativevalue(initativelist, 12, "Redeye")
-initativelist = addinitiativevalue(initativelist, 10, "Mook1")
-initativelist = addinitiativevalue(initativelist, 10, "Mook2")
-# fill the listbox
-filllistbox(initativelist)
 
 win.mainloop()
