@@ -2,11 +2,10 @@ import tkinter as tk
 from tkinter import ttk 
 import random
 
-# tutorial from https://www.pythontutorial.net/tkinter/tkinter-listbox/
+# to do, add in tkinter controls at manually add participants
 
 def initaliseinitatives(initativelist):
     # method to initialise initative array
-    # currently fills the listbox, but not the final usage
     for i in range(35):
         initativelist.append("empty")
     return initativelist
@@ -55,12 +54,24 @@ def printlist(initativelist):
     for x in initativelist:
         print(x)
 
+def items_selected(event):
+    # method to get selected item in the listbox and display in the textboxes
+    global initative_list
+    selected_indices = listbox.curselection()
+    selected_entity = [listbox.get(i) for i in selected_indices]
+    name_textbox.delete(0,'end')
+    name_textbox.insert('end', selected_entity)
+    for index,x in enumerate(initativelist):
+        if x == selected_entity[0]:
+            initative_textbox.delete(0,'end')
+            initative_textbox.insert('end', index)
+
 #declare initative list array
 initativelist = []
 
 # setup the tkinter window
 win = tk.Tk()
-win.geometry("300x300")
+win.geometry("600x300")
 win.title("Cyberpunk Initative Tracker")
 
 #setup the listbox and scrollbar
@@ -68,6 +79,18 @@ listbox = tk.Listbox(win, height = 10,  bg = "white", fg = "black", selectmode =
 scrollbar = ttk.Scrollbar(win, orient=tk.VERTICAL, command=listbox.yview)
 # assign the scrollbar to the listbox
 listbox['yscrollcommand'] = scrollbar.set
+# assign the ListboxSelection command to the listbox
+listbox.bind('<<ListboxSelect>>', items_selected)
+# setup the labels and textboxes
+name_label = tk.Label(win, text="Name:", font=("Arial", 12), bg='#fff', fg='#000')
+name_label.place(x=240, y=25)
+name_textbox = tk.Entry(win, font=("Arial", 12), bg='#fff', fg='#000')
+name_textbox.place(x=305, y=25)
+initative_label = tk.Label(win, text="Initative:", font=("Arial", 12), bg='#fff', fg='#000')
+initative_label.place(x=240, y=55)
+initative_textbox = tk.Entry(win, font=("Arial", 12), bg='#fff', fg='#000')
+initative_textbox.place(x=305, y=55)
+
 # pack components
 listbox.pack()
 scrollbar.pack()
