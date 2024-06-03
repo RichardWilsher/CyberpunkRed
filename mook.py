@@ -2,9 +2,8 @@ import math
 
 class mook(object):
     name = ''
-    type = ""
-    generic = ""
-    rep = ""
+    mooktype = ''
+    rep = ''
     headarmour = []
     bodyarmour = []
     stats = {}
@@ -13,17 +12,16 @@ class mook(object):
     skills = {}
     equipment = []
     cyberwear = []
-    location = ""
+    location = ''
     hp = 0
     seriouslywounded = 0
     deathsave = 0
     armourmodifier = 0
 
 
-    def __init__(self, name, type, rep, generic, headarmour, bodyarmour, stats, weapons, role, skills, equipment, cyberwear, location, will, body, armourmodifier):
+    def __init__(self, name, mooktype, rep, headarmour, bodyarmour, stats, weapons, role, skills, equipment, cyberwear, location, will, body, armourmodifier):
         self.name = name
-        self.type = type
-        self.generic = generic
+        self.mooktype = mooktype
         self.headarmour = headarmour
         self.bodyarmour = bodyarmour
         self.stats = stats
@@ -40,9 +38,9 @@ class mook(object):
         self.armourmodifier = armourmodifier
 
     def display(self):
-        print("Name : " + self.name)
-        print("Type: " +self.type)
-        print("Reputation: " + self.rep)
+        print("Name: " + self.name)
+        print("Type: " + self.mooktype)
+        print("Reputation: " + str(self.rep))
         print("Role: " + self.role)
         print("Hit Points: " + str(self.hp))
         print("Seriously Wounded: " + str(self.seriouslywounded))
@@ -64,13 +62,13 @@ class mook(object):
         print("Cyberwear:")
         for x in self.cyberwear:
             print(x)
-        print("Location : " + self.location)
+        print("Location: " + self.location)
 
     def getName(self):
         return self.name
     
     def getType(self):
-        return self.type
+        return self.mooktype
 
     def getRep(self):
         return self.rep
@@ -113,9 +111,6 @@ class mook(object):
     
     def getArmourModifier(self):
         return self.armourmodifier
-    
-    def getGeneric(self):
-        return self.generic
     
     def getskills(self):
         return self.skills

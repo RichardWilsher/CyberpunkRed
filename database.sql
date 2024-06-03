@@ -1,12 +1,6 @@
 -- MySQL script to create the tables required for the CPR programs
 -- No data is included
 -- not all fields are actively used at this time
-CREATE TABLE cpr.npcs (
-id int,
-name varchar(45),
-description varchar(4000)
-);
-ALTER TABLE cpr.npcs CHANGE COLUMN id id INT NOT NULL AUTO_INCREMENT , ADD PRIMARY KEY (id);
 CREATE TABLE cpr.roles (
 id int,
 ability varchar(20),
@@ -38,8 +32,8 @@ ALTER TABLE cpr.stats CHANGE COLUMN id id INT NOT NULL AUTO_INCREMENT , ADD PRIM
 CREATE TABLE cpr.mooks (
 id int,
 name varchar(45),
+mook_type int,
 type int,
-generic varchar(1),
 headsp int,
 bodysp int,
 location varchar(45),
@@ -138,4 +132,8 @@ id int,
 name varchar(10)
 );
 ALTER TABLE cpr.weapon_quality CHANGE COLUMN id id INT NOT NULL AUTO_INCREMENT , ADD PRIMARY KEY (id);
-
+CREATE TABLE cpr.mook_type (
+id int,
+name varchar(45)
+);
+ALTER TABLE cpr.mook_type CHANGE COLUMN id id INT NOT NULL AUTO_INCREMENT , ADD PRIMARY KEY (id);

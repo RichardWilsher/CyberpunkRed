@@ -9,12 +9,17 @@ def loadmooks(id):
     mookentry = dbt.find("cpr.mooks", "id", str(id))[0]
     attributes = dbt.describe("cpr.mooks")
     armourmodifier = 0
+    mooktype = ''
     for index,attribute in enumerate(attributes):  
         if isinstance(mookentry[index], numbers.Number):
             value = mookentry[index]
+            if attribute[0] == "mook_type":
+                temptype = dbt.find("cpr.mook_type","id", str(value))
+                mooktype = temptype[0][1]
             if attribute[0] == "type":
-                types = dbt.find("cpr.type","id", str(value))
-                mooktype = types[0][1]
+                if value != "1":
+                    temptype = dbt.find("cpr.type","id", str(value))
+                    mooktype = temptype[0][1]
             if attribute[0] == "headsp" or attribute[0] == "bodysp":
                 armourtype = dbt.find("cpr.armour","id", str(value))
                 armourmodifier = int(armourtype[0][3])
@@ -27,9 +32,6 @@ def loadmooks(id):
         else:
             if attribute[0] == "name":
                 mookname = mookentry[index]
-            if attribute[0] == "generic":
-                generic = mookentry[index]
-                mookgeneric = attribute[0] + ": " + generic
             if attribute[0] == "location":
                 mooklocation = mookentry[index]
 
@@ -120,14 +122,14 @@ def loadmooks(id):
                 if cyberwear[4] != None:
                     printStr += " (" + str(cyberwear[4]) + ")"
                 mookcyberwear.append(printStr)
-    newmook = mook.mook(mookname, mooktype, rep, mookgeneric, mookheadarmour, mookbodyarmour, mookstats, mookweapons, mookrole, mookskills, mookequipment, mookcyberwear, mooklocation, will, body, armourmodifier)
+    newmook = mook.mook(mookname, mooktype, rep, mookheadarmour, mookbodyarmour, mookstats, mookweapons, mookrole, mookskills, mookequipment, mookcyberwear, mooklocation, will, body, armourmodifier)
     return newmook
 
 def display_mook(mookposition):
     mooks[mookposition].display()
 
 def get_index(*arg):
-    # display_mook(mookchoosen.current())
+    display_mook(mookchoosen.current())
     mookrole_label['text'] = mooks[mookchoosen.current()].getRole()
     mookrep_label['text'] = mooks[mookchoosen.current()].getRep()
     mookseriouslywounded_label['text'] = mooks[mookchoosen.current()].getSeriouslyWounded()
@@ -200,7 +202,8 @@ def get_index(*arg):
             
 dbt = databaseTools.databaseTools()
 mooks = []
-mooktable = dbt.findall("cpr.mooks")
+mooktable = dbt.find("cpr.mooks", "type", "1")
+# mooktable = dbt.findall("cpr.mooks")
 
 for index,entry in enumerate(mooktable):
     mooks.append(loadmooks(index+1))
