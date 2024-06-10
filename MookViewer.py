@@ -5,6 +5,8 @@ import mook
 import tkinter as tk
 from tkinter import ttk 
 
+weaponlist = []
+
 def loadmooks(id):
     mookentry = dbt.find("cpr.mooks", "id", str(id))[0]
     attributes = dbt.describe("cpr.mooks")
@@ -55,22 +57,20 @@ def loadmooks(id):
             mookstats[statName] = str(stat[3]) + " (" + str(modvalue) + ")"
         else:
             mookstats[statName] = stat[3]
-    mookweapons = {}
     weaponTypes = dbt.findall("cpr.weapons")
     qualityTypes = dbt.findall("cpr.weapon_quality")
     weapons = dbt.find("cpr.mook_weapon","mookid", str(id))
-    # for index,weapon in enumerate(weapons):
-    #     for weaponType in weaponTypes:
-    #         if weaponType[0] == weapon[2]:
-    #             for quality in qualityTypes:
-    #                 if quality[0] == weapon[3]:
-    #                     if quality[0] != 1:
-    #                         weaponname = quality[1] + " Quality " + weaponType[1]
-    #                     else :
-    #                         weaponname = weaponType[1]
-    #                     dice = str(weaponType[2])
-    #                     rof = weaponType[3]
-    #                     mookweapons[weaponname] = [dice,rof]
+    weaponlist = []
+    for index,weapon in enumerate(weapons):
+        for weaponType in weaponTypes:
+            if weaponType[0] == weapon[2]:
+                for quality in qualityTypes:
+                    if quality[0] == weapon[3]:
+                        if quality[0] != 1:
+                            weaponname = quality[1] + " Quality " + weaponType[1]
+                        else :
+                            weaponname = weaponType[1]
+                        weaponlist.append(weaponname)
     roleTitle = dbt.findall("cpr.roles")
     roles = dbt.find("cpr.mook_role","mookid", str(id))
     mookrole = ''
@@ -122,14 +122,13 @@ def loadmooks(id):
                 if cyberwear[4] != None:
                     printStr += " (" + str(cyberwear[4]) + ")"
                 mookcyberwear.append(printStr)
-    newmook = mook.mook(mookname, mooktype, rep, mookheadarmour, mookbodyarmour, mookstats, mookweapons, mookrole, mookskills, mookequipment, mookcyberwear, mooklocation, will, body, armourmodifier)
+    newmook = mook.mook(mookname, mooktype, rep, mookheadarmour, mookbodyarmour, mookstats, weaponlist, mookrole, mookskills, mookequipment, mookcyberwear, mooklocation, will, body, armourmodifier)
     return newmook
 
 def display_mook(mookposition):
     mooks[mookposition].display()
 
 def get_index(*arg):
-    # display_mook(mookchoosen.current())
     mookrole_label['text'] = mooks[mookchoosen.current()].getRole()
     mookrep_label['text'] = mooks[mookchoosen.current()].getRep()
     mookseriouslywounded_label['text'] = mooks[mookchoosen.current()].getSeriouslyWounded()
@@ -146,17 +145,10 @@ def get_index(*arg):
     mookmove_label['text'] = stats.get('Move')
     mookbody_label['text'] = stats.get('Body')
     mookemp_label['text'] = stats.get('Emp')
-    count = 1
-    for x,y in mooks[mookchoosen.current()].getWeapons().items():
-        if count == 1:
-            mookweapon1name_label['text'] = x
-            mookweapon1rof_label['text'] = y[1]
-            mookweapon1damage_label['text'] = y[0] + "D6"
-        if count == 2:
-            mookweapon2name_label['text'] = x
-            mookweapon2rof_label['text'] = y[1]
-            mookweapon2damage_label['text'] = y[0] + "D6"  
-        count += 1
+    global weaponlist
+    weaponlist = mooks[mookchoosen.current()].getWeapons()
+    mookweaponchoosen['value'] = tuple(weaponlist)
+    mookweaponchoosen.current(0)
     mookarmourhead_label['text'] = mooks[mookchoosen.current()].getHeadArmour()[0]
     mookarmourheadsp_label['text'] = mooks[mookchoosen.current()].getHeadArmour()[1]
     mookarmourbody_label['text'] = mooks[mookchoosen.current()].getBodyArmour()[0]
@@ -189,9 +181,17 @@ def get_index(*arg):
         count += 1
     mookcyberwear_label['text'] = mookcyberwaredisplay
             
+def get_weapons(*arg):
+    tempweaponname = mookweaponchoosen.get()
+    strippoor = tempweaponname.lstrip("Poor Quality ")
+    weaponname = strippoor.lstrip("Excelent Quality ")
+    weaponprofile = dbt.find("cpr.weapons", "name", weaponname)[0]
+    rof_label['text'] = weaponprofile[3]
+    damage_label['text'] = weaponprofile[2] + "D6"
+
+
 # Build UI        
 win = tk.Tk()
-# win.geometry("753x508")
 win.title("Cyberpunk Red Mook Viewer")
 canvas = tk.Canvas(win, width=830, height=645, bg="white")
 
@@ -277,7 +277,6 @@ rectangle = canvas.create_rectangle(15, 550, 135, 575, fill="#a32", outline="#a3
 canvas.create_line(130, 545, 145, 570, fill="#fff", width=7)
 # cyberwear Divider
 canvas.create_line(15, 576, 818, 576, fill="#000", width=2)
-
 
 canvas.pack()
 
@@ -369,7 +368,7 @@ damageheader_label.place(x=470, y=235)
 rof_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
 rof_label.place(x=435, y=275)
 damage_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'left')
-damage_label.place(x=475, y=275)
+damage_label.place(x=495, y=275)
 # armour headers
 mookarmourhead_label = tk.Label(win, text="head", font=("Arial", 12), bg='#fff', fg='#000')
 mookarmourhead_label.place(x=570, y=226)
@@ -401,19 +400,26 @@ mookcyberwear_label.place(x=15, y=580)
 #main program start
 dbt = databaseTools.databaseTools()
 mooks = []
+# fill array
 mooktable = dbt.find("cpr.mooks", "type", "1")
 # mooktable = dbt.findall("cpr.mooks")
 
 for index,entry in enumerate(mooktable):
     mooks.append(loadmooks(index+1))
 
-dbt.close()
+# weapon combobox
+w = tk.StringVar() 
+mookweaponchoosen = ttk.Combobox(win, width = 27, textvariable = w) 
+w.trace_add('write', get_weapons)
+mookweaponchoosen['value'] = tuple(weaponlist)
+mookweaponchoosen['state'] = 'readonly'
+mookweaponchoosen.place(x=20, y=275)
 
 # name Combobox
 n = tk.StringVar() 
 mookchoosen = ttk.Combobox(win, width = 27, textvariable = n) 
 n.trace_add('write', get_index) 
-mookchoosen.place(x=80, y=25)
+mookchoosen.place(x=80, y=28)
 
 # name organise
 mooklist = []
