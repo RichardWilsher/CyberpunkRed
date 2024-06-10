@@ -19,7 +19,8 @@ type_label = tk.Label(win, text="Type:", font=("Arial", 12), bg='#fff', fg='#000
 type_label.place(x=10, y=15)
 type_v = tk.StringVar()
 type_combo = ttk.Combobox(win, width = 5, textvariable = type_v)
-type_combo['values'] = ('Mook', 'NPC', 'PC')
+mastertype = db.selectedfindall("cpr.type", "name")
+type_combo['values'] = mastertype
 type_combo['state'] = 'readonly'
 type_combo.current(0)
 type_combo.place(x=80, y=15)
@@ -27,7 +28,11 @@ mooktype_label = tk.Label(win, text="Mook Type:", font=("Arial", 12), bg='#fff',
 mooktype_label.place(x=440, y=15)
 mooktype_v = tk.StringVar()
 mooktype_combo = ttk.Combobox(win, width = 20, textvariable = mooktype_v)
-mooktype_combo['values'] = ('Mook', 'Hardened Mook', 'Lieutenant', 'Hardened Lieutenant', 'Mini-Boss', 'Hardened Mini-Boss', 'Boss', 'Hardened Boss')
+mooktype = db.selectedfindall("cpr.mook_type", "name")
+mooktypes = []
+for mook in mooktype:
+    mooktypes.append(mook[0])
+mooktype_combo['values'] = mooktypes
 mooktype_combo['state'] = 'readonly'
 mooktype_combo.current(0)
 mooktype_combo.place(x=560, y=15)
@@ -47,9 +52,17 @@ role_label = tk.Label(win, text="Role:", font=("Arial", 12), bg='#fff', fg='#000
 role_label.place(x=10, y=96)
 role_v = tk.StringVar()
 role_combo = ttk.Combobox(win, width = 10, textvariable = role_v)
-role_combo['values'] = ('none', 'Exec', 'Fixer', 'Lawman', 'Media', 'Medtech', 'Netrunner', 'Nomad', 'Rockerboy', 'Solo', 'Tech')
+roles = db.orderedselecectedfindall("cpr.roles", "name", "name")
+role_combo['values'] = roles
 role_combo['state'] = 'readonly'
-role_combo.current(0)
+position = 0
+for index,role in enumerate(roles):
+    string = str(role)
+    string = string.lstrip('(\')')
+    string = string.rstrip(',\')')
+    if string == "none":
+        position = index
+role_combo.current(position)
 role_combo.place(x=80, y=96)
 roleability_label = tk.Label(win, text="Role Ability:", font=("Arial", 12), bg='#fff', fg='#000')
 roleability_label.place(x=310, y=96)
