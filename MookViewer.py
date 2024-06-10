@@ -1,9 +1,9 @@
+import tkinter as tk
 import databaseTools
 import numbers
 import mook
 import tkinter as tk
 from tkinter import ttk 
-from PIL import ImageTk, Image
 
 def loadmooks(id):
     mookentry = dbt.find("cpr.mooks", "id", str(id))[0]
@@ -59,18 +59,18 @@ def loadmooks(id):
     weaponTypes = dbt.findall("cpr.weapons")
     qualityTypes = dbt.findall("cpr.weapon_quality")
     weapons = dbt.find("cpr.mook_weapon","mookid", str(id))
-    for index,weapon in enumerate(weapons):
-        for weaponType in weaponTypes:
-            if weaponType[0] == weapon[2]:
-                for quality in qualityTypes:
-                    if quality[0] == weapon[3]:
-                        if quality[0] != 1:
-                            weaponname = quality[1] + " Quality " + weaponType[1]
-                        else :
-                            weaponname = weaponType[1]
-                        dice = str(weaponType[2])
-                        rof = weaponType[3]
-                        mookweapons[weaponname] = [dice,rof]
+    # for index,weapon in enumerate(weapons):
+    #     for weaponType in weaponTypes:
+    #         if weaponType[0] == weapon[2]:
+    #             for quality in qualityTypes:
+    #                 if quality[0] == weapon[3]:
+    #                     if quality[0] != 1:
+    #                         weaponname = quality[1] + " Quality " + weaponType[1]
+    #                     else :
+    #                         weaponname = weaponType[1]
+    #                     dice = str(weaponType[2])
+    #                     rof = weaponType[3]
+    #                     mookweapons[weaponname] = [dice,rof]
     roleTitle = dbt.findall("cpr.roles")
     roles = dbt.find("cpr.mook_role","mookid", str(id))
     mookrole = ''
@@ -138,24 +138,12 @@ def get_index(*arg):
     stats = mooks[mookchoosen.current()].getStats()
     mookint_label['text'] = stats.get('Int')
     mookref_label['text'] = stats.get('Ref')
-    if len(stats.get('Ref')) > 2:
-        mookref_label.place(x=101, y=128)
-    else:
-        mookref_label.place(x=115, y=128)
     mookdex_label['text'] = stats.get('Dex')
-    if len(stats.get('Dex')) > 2:
-        mookdex_label.place(x=185, y=128)
-    else:
-        mookdex_label.place(x=200, y=128)
     mooktech_label['text'] = stats.get('Tech')
     mookcool_label['text'] = stats.get('Cool')
     mookluck_label['text'] = stats.get('Luck')
     mookwill_label['text'] = stats.get('Will')
     mookmove_label['text'] = stats.get('Move')
-    if len(stats.get('Move')) > 2:
-        mookmove_label.place(x=570, y=128)
-    else:
-        mookmove_label.place(x=580, y=128)
     mookbody_label['text'] = stats.get('Body')
     mookemp_label['text'] = stats.get('Emp')
     count = 1
@@ -201,6 +189,216 @@ def get_index(*arg):
         count += 1
     mookcyberwear_label['text'] = mookcyberwaredisplay
             
+# Build UI        
+win = tk.Tk()
+# win.geometry("753x508")
+win.title("Cyberpunk Red Mook Viewer")
+canvas = tk.Canvas(win, width=830, height=645, bg="white")
+
+# Shadow Box
+rectangle = canvas.create_rectangle(9, 9, 829, 644, fill="#ddd", outline="#ddd", width=2)
+# Border Box
+rectangle = canvas.create_rectangle(5, 5, 825, 640, fill="white", outline="#ccc", width=2)
+# Name Box
+rectangle = canvas.create_rectangle(15, 15, 400, 65, fill="white", outline="#a32", width=3)
+# Rep Box
+rectangle = canvas.create_rectangle(405, 15, 500, 65, fill="white", outline="#a32", width=3)
+# Role Box
+rectangle = canvas.create_rectangle(15, 70, 500, 120, fill="white", outline="#a32", width=3)
+# Seriously Wounded Box
+canvas.create_line(505, 15, 665, 15, fill="#a32", width=3)
+canvas.create_line(505, 65, 690, 65, fill="#a32", width=3)
+canvas.create_line(505, 15, 505, 65, fill="#a32", width=3)
+canvas.create_line(665, 15, 690, 65, fill="#a32", width=3)
+# Death Save Box
+canvas.create_line(505, 70, 691, 70, fill="#a32", width=3)
+canvas.create_line(505, 120, 719, 120, fill="#a32", width=3)
+canvas.create_line(505, 70, 505, 120, fill="#a32", width=3)
+canvas.create_line(691, 70, 719, 120, fill="#a32", width=3)
+# HP Label Box
+canvas.create_line(670, 15, 725, 120, width=2)
+canvas.create_line(725, 15, 725, 120, width=2)
+canvas.create_line(670, 15, 725, 15, width=2)
+# HP Box
+canvas.create_line(726, 15, 813, 15, width=3, fill="#a32")
+canvas.create_line(726, 120, 813, 120, width=3, fill="#a32")
+canvas.create_line(813, 15, 813, 120, width=3, fill="#a32")
+# Stats Label Box
+rectangle = canvas.create_rectangle(15, 130, 90, 154, fill="#a32", outline="#a32", width=3) 
+# Stats cut out
+canvas.create_line(85, 125, 95, 140, fill="#fff", width=7)
+# Stats Divider
+canvas.create_line(15, 157, 818, 157, fill="#000", width=2)
+# Weapon Label Box
+rectangle = canvas.create_rectangle(15, 185, 110, 210, fill="#a32", outline="#a32", width=3)
+# Weapon cut out
+canvas.create_line(103, 175, 120, 203, fill="#fff", width=7)
+# Weapon Divider
+canvas.create_line(15, 213, 550, 213, fill="#000", width=2)
+#armor label Box
+rectangle = canvas.create_rectangle(555, 185, 640, 210, fill="#a32", outline="#a32", width=3)
+# armor cut out
+canvas.create_line(632, 175, 649, 203, fill="#fff", width=7)
+# armor Divider
+canvas.create_line(555, 213, 818, 213, fill="#000", width=2)
+# head armor Box
+rectangle = canvas.create_rectangle(555, 217, 566, 260, fill="#a32", outline="#a32", width=3)
+# body armor Box
+rectangle = canvas.create_rectangle(555, 264, 566, 306, fill="#a32", outline="#a32", width=3)
+#head armour Boxes
+rectangle = canvas.create_rectangle(565, 217, 740, 260, fill="#fff", outline="#a32", width=3)
+rectangle = canvas.create_rectangle(745, 217, 815, 260, fill="#fff", outline="#a32", width=3)
+# body armour Boxes
+rectangle = canvas.create_rectangle(565, 264, 740, 306, fill="#fff", outline="#a32", width=3)
+rectangle = canvas.create_rectangle(745, 264, 815, 306, fill="#fff", outline="#a32", width=3)
+# weapon header Boxes
+rectangle = canvas.create_rectangle(15, 219, 415, 259, fill="#a32", outline="#a32", width=3)
+rectangle = canvas.create_rectangle(420, 219, 465, 259, fill="#a32", outline="#a32", width=3)
+rectangle = canvas.create_rectangle(470, 219, 547, 259, fill="#a32", outline="#a32", width=3)
+# weapon Boxes
+rectangle = canvas.create_rectangle(15, 265, 415, 305, fill="#fff", outline="#a32", width=3)
+rectangle = canvas.create_rectangle(420, 265, 465, 305, fill="#fff", outline="#a32", width=3)
+rectangle = canvas.create_rectangle(470, 265, 547, 305, fill="#fff", outline="#a32", width=3)
+# skills label Box
+rectangle = canvas.create_rectangle(15, 313, 135, 338, fill="#a32", outline="#a32", width=3)
+# skills cut out
+canvas.create_line(131, 310, 151, 340, fill="#fff", width=7)
+# skills Divider
+canvas.create_line(15, 340, 818, 340, fill="#000", width=2)
+# gear header Box
+rectangle = canvas.create_rectangle(15, 455, 95, 480, fill="#a32", outline="#a32", width=3)
+# gear cut out
+canvas.create_line(91, 452, 111, 482, fill="#fff", width=7)
+# gear Divider
+canvas.create_line(15, 482, 818, 482, fill="#000", width=2)
+# cyberwear header Box
+rectangle = canvas.create_rectangle(15, 550, 135, 575, fill="#a32", outline="#a32", width=3)
+# cyberwear cut out
+canvas.create_line(130, 545, 145, 570, fill="#fff", width=7)
+# cyberwear Divider
+canvas.create_line(15, 576, 818, 576, fill="#000", width=2)
+
+
+canvas.pack()
+
+# Labels
+namelabel = tk.Label(win, text="NAME", font=("Arial", 12, "bold"), bg='#fff', fg='#000')
+namelabel.place(x=20, y=27)
+rolelabel = tk.Label(win, text="ROLE", font=("Arial", 12, "bold"), bg='#fff', fg='#000')
+rolelabel.place(x=20, y=82)
+replabel = tk.Label(win, text="REP", font=("Arial", 12, "bold"), bg='#fff', fg='#000')
+replabel.place(x=410, y=27)
+seriouslywoundedlabel = tk.Label(win, text="SERIOUSLY WOUNDED", font=("Arial", 12, "bold"), bg='#fff', fg='#000', wraplength=100, justify="left")
+seriouslywoundedlabel.place(x=510, y=17)
+deathsavelabel = tk.Label(win, text="DEATH SAVE", font=("Arial", 12, "bold"), bg='#fff', fg='#000', wraplength=100, justify="left")
+deathsavelabel.place(x=510, y=72)
+hplable = tk.Label(win, text="HP", font=("Arial", 14, "bold"), bg='#fff', fg='#000')
+hplable.place(x=687, y=16)
+# Value Labels
+mookrole_label = tk.Label(win, text="Mook Role", font=("Arial", 12), bg='#fff', fg='#000')
+mookrole_label.place(x=80, y=82)
+mookrep_label = tk.Label(win, text="rep", font=("Arial", 12), bg='#fff', fg='#000')
+mookrep_label.place(x=455, y=25)
+mookseriouslywounded_label = tk.Label(win, text="sw", font=("Arial", 12), bg='#fff', fg='#000')
+mookseriouslywounded_label.place(x=620, y=25)
+mookdeathsave_label = tk.Label(win, text="ds", font=("Arial", 12), bg='#fff', fg='#000')
+mookdeathsave_label.place(x=620, y=82)
+mookhp_label = tk.Label(win, text="hp", font=("Arial", 26, "bold"), bg='#fff', fg='#000')
+mookhp_label.place(x=745, y=40)
+# stats label
+statslabel = tk.Label(win, text="STATS", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+statslabel.place(x=17, y=131)
+# Stats Labels
+intlabel = tk.Label(win, text="INT", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+intlabel.place(x=20, y=160)
+reflabel = tk.Label(win, text="REF", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+reflabel.place(x=85, y=160)
+dexlabel = tk.Label(win, text="DEX", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+dexlabel.place(x=165, y=160)
+techlabel = tk.Label(win, text="TECH", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+techlabel.place(x=250, y=160)
+coollabel = tk.Label(win, text="COOL", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+coollabel.place(x=330, y=160)
+willlabel = tk.Label(win, text="WILL", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+willlabel.place(x=410, y=160)
+lucklabel = tk.Label(win, text="LUCK", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+lucklabel.place(x=490, y=160)
+movelabel = tk.Label(win, text="MOVE", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+movelabel.place(x=570, y=160)
+bodylabel = tk.Label(win, text="BODY", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+bodylabel.place(x=670, y=160)
+emplabel = tk.Label(win, text="EMP", font=("Arial", 10, "bold"), bg='#ddd', fg='#000')
+emplabel.place(x=750, y=160)
+# Stat Value Labels
+mookint_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mookint_label.place(x=60, y=160)
+mookref_label = tk.Label(win, text="2(0)", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mookref_label.place(x=125, y=160)
+mookdex_label = tk.Label(win, text="2(0)", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mookdex_label.place(x=210, y=160)
+mooktech_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mooktech_label.place(x=305, y=160)
+mookcool_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mookcool_label.place(x=385, y=160)
+mookwill_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mookwill_label.place(x=465, y=160)
+mookluck_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mookluck_label.place(x=545, y=160)
+mookmove_label = tk.Label(win, text="2(0)", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mookmove_label.place(x=625, y=160)
+mookbody_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mookbody_label.place(x=725, y=160)
+mookemp_label = tk.Label(win, text="2(0)", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+mookemp_label.place(x=790, y=160)
+# Weapon Label
+weaponlabel = tk.Label(win, text="WEAPONS", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+weaponlabel.place(x=15, y=186)
+# armour label
+armourlabel = tk.Label(win, text="ARMOR", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+armourlabel.place(x=555, y=186)
+# head body shield labels
+canvas.create_text(560, 260, text="HEAD", font=("Arial", 10, "bold"), fill='#ffffff', angle=90, anchor="w")
+canvas.create_text(560, 306, text="BODY", font=("Arial", 10, "bold"), fill='#ffffff', angle=90, anchor="w")
+# weapon headers
+weaponheader_label = tk.Label(win, text="WEAPON", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+weaponheader_label.place(x=15, y=235)
+rofheader_label = tk.Label(win, text="ROF", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+rofheader_label.place(x=420, y=235)
+damageheader_label = tk.Label(win, text="DAMAGE", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+damageheader_label.place(x=470, y=235)
+rof_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'center')
+rof_label.place(x=435, y=275)
+damage_label = tk.Label(win, text="2", font=("Arial", 10), bg='#fff', fg='#000', justify = 'left')
+damage_label.place(x=475, y=275)
+# armour headers
+mookarmourhead_label = tk.Label(win, text="head", font=("Arial", 12), bg='#fff', fg='#000')
+mookarmourhead_label.place(x=570, y=226)
+mookarmourheadsp_label = tk.Label(win, text="spec", font=("Arial", 12), bg='#fff', fg='#000')
+mookarmourheadsp_label.place(x=748, y=226)
+mookarmourbody_label = tk.Label(win, text="body", font=("Arial", 12), bg='#fff', fg='#000')
+mookarmourbody_label.place(x=570, y=271)
+mookarmourbodysp_label = tk.Label(win, text="spec", font=("Arial", 12), bg='#fff', fg='#000')
+mookarmourbodysp_label.place(x=748, y=271)
+# skills header label
+skilllabel = tk.Label(win, text="SKILL BASES", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+skilllabel.place(x=15, y=313)
+# skill label
+mookskills_label = tk.Label(win, text="skills", font=("Arial", 9), wraplength=733, justify="left", bg='#fff', fg='#000')
+mookskills_label.place(x=15, y=345)
+# gear header label
+gearlabel = tk.Label(win, text="GEAR", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+gearlabel.place(x=15, y=455)
+# gear label
+mookequipment_label = tk.Label(win, text="gear", font=("Arial", 9), wraplength=733, justify="left", bg='#fff', fg='#000')
+mookequipment_label.place(x=15, y=485)
+# cyberwear header label
+cyberwearlabel = tk.Label(win, text="CYBERWEAR", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+cyberwearlabel.place(x=15, y=550)
+# cyberwear label
+mookcyberwear_label = tk.Label(win, text="cyberwear", font=("Arial", 9), wraplength=733, justify="left", bg='#fff', fg='#000')
+mookcyberwear_label.place(x=15, y=580)
+
+#main program start
 dbt = databaseTools.databaseTools()
 mooks = []
 mooktable = dbt.find("cpr.mooks", "type", "1")
@@ -211,107 +409,19 @@ for index,entry in enumerate(mooktable):
 
 dbt.close()
 
-win = tk.Tk()
-win.geometry("753x508")
-win.title("Cyberpunk Red Mook Viewer")
-
-background_image = Image.open("background.jpg")
-background = ImageTk.PhotoImage(background_image)
-image_label = tk.Label(win , image = background)
-image_label.place(x = 0 , y = 0)
-
-mookrole_label = tk.Label(win, text="Mook Role", font=("Arial", 12), bg='#fff', fg='#000')
-mookrole_label.place(x=80, y=66)
-mookrep_label = tk.Label(win, text="rep", font=("Arial", 12), bg='#fff', fg='#000')
-mookrep_label.place(x=435, y=25)
-mookseriouslywounded_label = tk.Label(win, text="sw", font=("Arial", 12), bg='#fff', fg='#000')
-mookseriouslywounded_label.place(x=580, y=25)
-mookdeathsave_label = tk.Label(win, text="ds", font=("Arial", 12), bg='#fff', fg='#000')
-mookdeathsave_label.place(x=580, y=66)
-mookhp_label = tk.Label(win, text="hp", font=("Arial", 26, "bold"), bg='#fff', fg='#000')
-mookhp_label.place(x=687, y=33)
-intlabel = tk.Label(win, text="INT ", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-intlabel.place(x=10, y=128)
-mookint_label = tk.Label(win, text="int", font=("Arial", 12), bg='#fff', fg='#000')
-mookint_label.place(x=46, y=129)
-reflabel = tk.Label(win, text="REF ", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-reflabel.place(x=63, y=128)
-mookref_label = tk.Label(win, text="ref", font=("Arial", 12), bg='#fff', fg='#000')
-mookref_label.place(x=115, y=129)
-dexlabel = tk.Label(win, text="DEX ", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-dexlabel.place(x=140, y=128)
-mookdex_label = tk.Label(win, text="dex", font=("Arial", 12), bg='#fff', fg='#000')
-mookdex_label.place(x=200, y=129)
-techlabel = tk.Label(win, text="TECH", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-techlabel.place(x=225, y=128)
-mooktech_label = tk.Label(win, text="tech", font=("Arial", 12), bg='#fff', fg='#000')
-mooktech_label.place(x=280, y=129)
-coollabel = tk.Label(win, text="COOL", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-coollabel.place(x=300, y=128)
-mookcool_label = tk.Label(win, text="cool", font=("Arial", 12), bg='#fff', fg='#000')
-mookcool_label.place(x=355, y=129)
-willlabel = tk.Label(win, text="WILL", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-willlabel.place(x=375, y=128)
-mookwill_label = tk.Label(win, text="will", font=("Arial", 12), bg='#fff', fg='#000')
-mookwill_label.place(x=424, y=129)
-lucklabel = tk.Label(win, text="LUCK", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-lucklabel.place(x=446, y=128)
-mookluck_label = tk.Label(win, text="0", font=("Arial", 12), bg='#fff', fg='#000')
-mookluck_label.place(x=500, y=129)
-movelabel = tk.Label(win, text="MOVE", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-movelabel.place(x=515, y=128)
-mookmove_label = tk.Label(win, text="move", font=("Arial", 12), bg='#fff', fg='#000')
-mookmove_label.place(x=580, y=129)
-bodylabel = tk.Label(win, text="BODY", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-bodylabel.place(x=610, y=128)
-mookbody_label = tk.Label(win, text="body", font=("Arial", 12), bg='#fff', fg='#000')
-mookbody_label.place(x=663, y=129)
-emplabel = tk.Label(win, text="EMP", font=("Arial", 12, "bold"), bg='#bbb', fg='#000')
-emplabel.place(x=680, y=128)
-mookemp_label = tk.Label(win, text="emp", font=("Arial", 12), bg='#fff', fg='#000')
-mookemp_label.place(x=725, y=129)
-mookweapon1name_label = tk.Label(win, text="w1", font=("Arial", 12), bg='#fff', fg='#000')
-mookweapon1name_label.place(x=20, y=186)
-mookweapon1rof_label = tk.Label(win, text="rof", font=("Arial", 12), bg='#fff', fg='#000')
-mookweapon1rof_label.place(x=361, y=186)
-mookweapon1damage_label = tk.Label(win, text="dmg", font=("Arial", 12), bg='#fff', fg='#000')
-mookweapon1damage_label.place(x=441, y=186)
-mookweapon2name_label = tk.Label(win, text="w2", font=("Arial", 12), bg='#fff', fg='#000')
-mookweapon2name_label.place(x=20, y=219)
-mookweapon2rof_label = tk.Label(win, text="rof", font=("Arial", 12), bg='#fff', fg='#000')
-mookweapon2rof_label.place(x=361, y=219)
-mookweapon2damage_label = tk.Label(win, text="dmg", font=("Arial", 12), bg='#fff', fg='#000')
-mookweapon2damage_label.place(x=441, y=219)
-mookarmourhead_label = tk.Label(win, text="head", font=("Arial", 12), bg='#fff', fg='#000')
-mookarmourhead_label.place(x=522, y=186)
-mookarmourheadsp_label = tk.Label(win, text="spec", font=("Arial", 12), bg='#fff', fg='#000')
-mookarmourheadsp_label.place(x=698, y=186)
-mookarmourbody_label = tk.Label(win, text="body", font=("Arial", 12), bg='#fff', fg='#000')
-mookarmourbody_label.place(x=522, y=219)
-mookarmourbodysp_label = tk.Label(win, text="spec", font=("Arial", 12), bg='#fff', fg='#000')
-mookarmourbodysp_label.place(x=698, y=219)
-mookskills_label = tk.Label(win, text="skills", font=("Arial", 9), wraplength=733, justify="left", bg='#fff', fg='#000')
-mookskills_label.place(x=10, y=270)
-mookequipment_label = tk.Label(win, text="equipment", font=("Arial", 9), wraplength=733, justify="left", bg='#fff', fg='#000')
-mookequipment_label.place(x=10, y=368)
-mookcyberwear_label = tk.Label(win, text="cyberwear", font=("Arial", 9), wraplength=733, justify="left", bg='#fff', fg='#000')
-mookcyberwear_label.place(x=10, y=450)
-
+# name Combobox
 n = tk.StringVar() 
 mookchoosen = ttk.Combobox(win, width = 27, textvariable = n) 
 n.trace_add('write', get_index) 
+mookchoosen.place(x=80, y=25)
 
+# name organise
 mooklist = []
 for mook in mooks:
     mooklist.append(mook.getName())
 
 mookchoosen['values'] = tuple(mooklist) 
 mookchoosen['state'] = 'readonly'
-
-mookchoosen.pack()
-
 mookchoosen.current(0)
-mookchoosen.place(x=80, y=25)
 
 win.mainloop()
-            
