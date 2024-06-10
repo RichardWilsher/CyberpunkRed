@@ -1,22 +1,6 @@
 import math
 
 class mook(object):
-    name = ''
-    mooktype = ''
-    rep = ''
-    headarmour = []
-    bodyarmour = []
-    stats = {}
-    weapons = {}
-    role = ''
-    skills = {}
-    equipment = []
-    cyberwear = []
-    location = ''
-    hp = 0
-    seriouslywounded = 0
-    deathsave = 0
-    armourmodifier = 0
 
 
     def __init__(self, name, mooktype, rep, headarmour, bodyarmour, stats, weapons, role, skills, equipment, cyberwear, location, will, body, armourmodifier):
@@ -129,3 +113,28 @@ class mook(object):
     
     def getRole(self):
         return self.role    
+
+
+# possible future change
+# from dataclasses import dataclass
+# import math
+
+# @dataclass
+# class mook:
+#     name: str
+#     mooktype: str
+#     rep: int
+#     headarmour: str
+#     bodyarmour: str
+#     stats: dict
+#     weapons: dict
+#     role: str
+#     skills: dict
+#     equipment: list
+#     cyberwear: list
+#     location: str
+#     will: int
+#     body: int
+#     armourmodifier: int
+# def getHP(self):
+#     return self.hp = 10 + (5 *(math.ceil((int(self.body) + int(self.will))/2))) 

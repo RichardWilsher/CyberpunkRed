@@ -291,8 +291,8 @@ seriouslywoundedlabel = tk.Label(win, text="SERIOUSLY WOUNDED", font=("Arial", 1
 seriouslywoundedlabel.place(x=510, y=17)
 deathsavelabel = tk.Label(win, text="DEATH SAVE", font=("Arial", 12, "bold"), bg='#fff', fg='#000', wraplength=100, justify="left")
 deathsavelabel.place(x=510, y=72)
-hplable = tk.Label(win, text="HP", font=("Arial", 14, "bold"), bg='#fff', fg='#000')
-hplable.place(x=687, y=16)
+hplabel = tk.Label(win, text="HP", font=("Arial", 14, "bold"), bg='#fff', fg='#000')
+hplabel.place(x=687, y=16)
 # Value Labels
 mookrole_label = tk.Label(win, text="Mook Role", font=("Arial", 12), bg='#fff', fg='#000')
 mookrole_label.place(x=80, y=82)
