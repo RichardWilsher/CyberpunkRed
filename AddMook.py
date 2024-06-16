@@ -25,6 +25,15 @@ armour_modifier = 0
 
 def save():
     print("save")
+    if headtup_var.get() == 1:
+        headtup = 'y'
+    else:
+        headtup = 'n'
+    if bodytup_var.get() == 1:
+        bodytup = 'y'
+    else:
+        bodytup = 'n'
+    print(headtup, bodytup)
 
 def clear():
     print("clear")
@@ -288,6 +297,13 @@ headsp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg
 headsp_label.place(x=335, y=232)
 bodysp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
 bodysp_label.place(x=335, y=280)
+# tech upgrade checkboxes
+headtup_var = tk.IntVar()
+headtup_check = tk.Checkbutton(win, text="Tech Upgraded?", variable=headtup_var, onvalue=1, offvalue=0, bg='#fff', fg='#000')
+headtup_check.place(x=400, y=232)
+bodytup_var = tk.IntVar()
+bodytup_check = tk.Checkbutton(win, text="Tech Upgraded?", variable=bodytup_var, onvalue=1, offvalue=0, bg='#fff', fg='#000')
+bodytup_check.place(x=400, y=280)
 # weapon divider
 rectangle = canvas.create_rectangle(15, 320, 135, 345, fill="#a32", outline="#a32", width=3)
 # weapon cut out
