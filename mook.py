@@ -124,8 +124,8 @@ class mook(object):
 #     name: str
 #     mooktype: str
 #     rep: int
-#     headarmour: str
-#     bodyarmour: str
+#     headarmour: dict
+#     bodyarmour: dict
 #     stats: dict
 #     weapons: dict
 #     role: str
@@ -133,8 +133,6 @@ class mook(object):
 #     equipment: list
 #     cyberwear: list
 #     location: str
-#     will: int
-#     body: int
 #     armourmodifier: int
 # def getHP(self):
-#     return self.hp = 10 + (5 *(math.ceil((int(self.body) + int(self.will))/2))) 
+#     return 10 + (5 *(math.ceil((int(self.body) + int(self.will))/2))) 

@@ -3,7 +3,10 @@ import mook
 import tkinter as tk
 from tkinter import ttk 
 import math
-import numbers
+import skillclass as sc
+import weaponclass as wc
+import equipmentclass as ec
+import cyberwearclass as cc
 
 db = databaseTools.databaseTools()
 standardstats = [2, 3, 4, 5, 6, 7, 8]
@@ -23,7 +26,7 @@ stats = {
 will = 2
 body = 2
 armour_modifier = 0 
-
+mook_skills = []
 
 def calc_hp(*arg):
     try:
@@ -97,7 +100,14 @@ def weaponremove():
     print("weaponremove")
 
 def skilladd():
+    global mook_skills
     print("skilladd")
+    skill = db.find("cpr.skills","name", skill_combo.get())
+    value = int(skillvalue_combo.get())
+    notes = skillnotes_text.get("1.0",'end')
+    skillentry = sc.skillvalue(skill[0][1], value, notes, skill[0][0])
+    mook_skills.append(skillentry)
+    skills_listbox.insert(tk.END, skill[0][1] + " " + str(value))
 
 def skillremove():
     print("skillremove")
@@ -383,8 +393,8 @@ weapon_scrollbar.pack(side="right", fill="y")
 weapon_scrollbar.place(x=192, y=360, height=61)
 # Weapon Combos
 weapon_quality = db.selectedfindall("cpr.weapon_quality","name")
-waeponquality_value = tk.StringVar()
-weaponquality_combo = ttk.Combobox(win, width = 20, textvariable = waeponquality_value)
+weaponquality_value = tk.StringVar()
+weaponquality_combo = ttk.Combobox(win, width = 20, textvariable = weaponquality_value)
 weaponquality_combo['values'] = weapon_quality
 weaponquality_combo['state'] = 'readonly'
 weaponquality_combo.current(0)
