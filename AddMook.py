@@ -397,6 +397,37 @@ equipment_scrollbar = ttk.Scrollbar(win, orient="vertical", command=equipment_li
 equipment_listbox.configure(yscrollcommand=equipment_scrollbar.set)
 equipment_scrollbar.pack(side="right", fill="y")
 equipment_scrollbar.place(x=192, y=650, height=79)
+# equipment combo
+equipment = db.orderedselecectedfindall("cpr.equipment", "name", "name")
+equipment_names = []
+for equip in equipment:
+    equipment_names.append(equip[0])
+equipment_value = tk.StringVar()
+equipment_combo = ttk.Combobox(win, width = 20, textvariable = equipment_value)
+equipment_combo['values'] = equipment_names
+equipment_combo['state'] = 'readonly'
+equipment_combo.current(0)
+equipment_combo.place(x=230, y=680)
+equipmentname_label = tk.Label(win, text="Equipment Name", font=("Arial", 10), bg='#fff', fg='#000')
+equipmentname_label.place(x=230, y=655)
+equipmentquantity_label = tk.Label(win, text="Quantity", font=("Arial", 10), bg='#fff', fg='#000')
+equipmentquantity_label.place(x=425, y=655)
+equipment_quantity = tk.StringVar()
+equipmentquantity_combo = ttk.Combobox(win, width = 2, textvariable = equipment_quantity)
+equipmentquantity_combo['values'] = [1,2,3,4,5,6,7,8,9,10,15,20,25,30,40,50,60,70,80,90,100]
+equipmentquantity_combo['state'] = 'readonly'
+equipmentquantity_combo.current(0)
+equipmentquantity_combo.place(x=425, y=680)
+equipmentnotes_label = tk.Label(win, text="Notes", font=("Arial", 10), bg='#fff', fg='#000')
+equipmentnotes_label.place(x=230, y=710)
+equipmentnotes_text = tk.Text(win, height=1, width=30, font=("Arial", 10), bg='#fff', fg='#000')
+equipmentnotes_text.place(x=280, y=710)
+equipmentadd_button = tk.Button(win, text="Add", font=("Arial", 10), bg='#a32', fg='#fff', command=equipmentadd)
+equipmentadd_button.place(x=600, y=680)
+equipmentupdate_button = tk.Button(win, text="Update", font=("Arial", 10), bg='#a32', fg='#fff', command=equipmentupdate)
+equipmentupdate_button.place(x=725, y=680)
+equipmentremove_button = tk.Button(win, text="Remove", font=("Arial", 10), bg='#a32', fg='#fff', command=equipmentremove)
+equipmentremove_button.place(x=650, y=680)
 # Cyberwear divider
 rectangle = canvas.create_rectangle(15, 735, 135, 760, fill="#a32", outline="#a32", width=3)
 # Cyberwear cut out
