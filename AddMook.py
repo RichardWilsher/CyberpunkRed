@@ -29,6 +29,39 @@ def save():
 def clear():
     print("clear")
 
+def weaponadd():
+    print("weaponadd")
+
+def weaponremove():
+    print("weaponremove")
+
+def skilladd():
+    print("skilladd")
+
+def skillremove():
+    print("skillremove")
+
+def skillupdate():
+    print("skillupdate")
+
+def equipmentadd():
+    print("equipmentadd")
+
+def equipmentremove():
+    print("equipmentremove")
+
+def equipmentupdate():
+    print("equipmentupdate")
+
+def cyberwearadd():
+    print("cyberwearadd")
+
+def cyberwearremove():
+    print("cyberwearremove")
+
+def cyberwearupdate():
+    print("cyberwearupdate")
+
 win = tk.Tk()
 w = 832
 h = 902
@@ -196,7 +229,7 @@ move_combo.current(0)
 move_combo.place(x=615, y=160)  
 body_value = tk.StringVar()
 body_combo = ttk.Combobox(win, width = 2, textvariable = body_value)
-body_combo['values'] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 14]
+body_combo['values'] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14]
 body_combo['state'] = 'readonly'
 body_combo.current(0)
 body_combo.place(x=712, y=160)
@@ -212,7 +245,7 @@ rectangle = canvas.create_rectangle(15, 190, 135, 215, fill="#a32", outline="#a3
 canvas.create_line(131, 187, 151, 217, fill="#fff", width=7)
 # armour Divider
 canvas.create_line(15, 217, 818, 217, fill="#000", width=2)
-armour_label = tk.Label(win, text="ARMOUR", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
+armour_label = tk.Label(win, text="ARMOR", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
 armour_label.place(x=15, y=190)
 # armour selector
 # head armor Box
@@ -226,8 +259,8 @@ rectangle = canvas.create_rectangle(311, 222, 371, 265, fill="#fff", outline="#a
 rectangle = canvas.create_rectangle(31, 266, 306, 309, fill="#fff", outline="#a32", width=3)
 rectangle = canvas.create_rectangle(311, 266, 371, 309, fill="#fff", outline="#a32", width=3)
 # head body shield labels
-canvas.create_text(25, 265, text="HEAD", font=("Arial", 10, "bold"), fill='#ffffff', angle=90, anchor="w")
-canvas.create_text(25, 308, text="BODY", font=("Arial", 10, "bold"), fill='#ffffff', angle=90, anchor="w")
+canvas.create_text(26, 264, text="HEAD", font=("Arial", 10, "bold"), fill='#ffffff', angle=90, anchor="w")
+canvas.create_text(26, 308, text="BODY", font=("Arial", 10, "bold"), fill='#ffffff', angle=90, anchor="w")
 # armour combo boxes
 armours = db.selectedfindall("cpr.armour","name")
 armour_names = []
@@ -246,9 +279,9 @@ bodysp_combo['state'] = 'readonly'
 bodysp_combo.current(0)
 bodysp_combo.place(x=40, y=280)
 # SP labels
-headsp_label = tk.Label(win, text="0", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
+headsp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
 headsp_label.place(x=335, y=232)
-bodysp_label = tk.Label(win, text="0", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
+bodysp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
 bodysp_label.place(x=335, y=280)
 # weapon divider
 rectangle = canvas.create_rectangle(15, 320, 135, 345, fill="#a32", outline="#a32", width=3)
@@ -270,6 +303,32 @@ weapon_scrollbar = ttk.Scrollbar(win, orient="vertical", command=weapon_listbox.
 weapon_listbox['yscrollcommand'] = weapon_scrollbar.set
 weapon_scrollbar.pack(side="right", fill="y")
 weapon_scrollbar.place(x=192, y=360, height=61)
+# Weapon Combos
+weapon_quality = db.selectedfindall("cpr.weapon_quality","name")
+waeponquality_value = tk.StringVar()
+weaponquality_combo = ttk.Combobox(win, width = 20, textvariable = waeponquality_value)
+weaponquality_combo['values'] = weapon_quality
+weaponquality_combo['state'] = 'readonly'
+weaponquality_combo.current(0)
+weaponquality_combo.place(x=230, y=380)
+weaponquality_label = tk.Label(win, text="Weapon Quality", font=("Arial", 10), bg='#fff', fg='#000')
+weaponquality_label.place(x=230, y=355)
+weapons = db.selectedfindall("cpr.weapons","name")
+weapon_names = []
+for weapon in weapons:
+    weapon_names.append(weapon[0])
+weapon_value = tk.StringVar()
+weapon_combo = ttk.Combobox(win, width = 20, textvariable = weapon_value)
+weapon_combo['values'] = weapon_names
+weapon_combo['state'] = 'readonly'
+weapon_combo.current(0)
+weapon_combo.place(x=400, y=380)
+weaponname_label = tk.Label(win, text="Weapon Name", font=("Arial", 10), bg='#fff', fg='#000')
+weaponname_label.place(x=400, y=355)
+weaponadd_button = tk.Button(win, text="Add", font=("Arial", 10), bg='#a32', fg='#fff', command=weaponadd)
+weaponadd_button.place(x=600, y=380)
+weaponremove_button = tk.Button(win, text="Remove", font=("Arial", 10), bg='#a32', fg='#fff', command=weaponremove)
+weaponremove_button.place(x=650, y=380)
 # skills divider
 rectangle = canvas.create_rectangle(15, 428, 135, 453, fill="#a32", outline="#a32", width=3)
 # skills cut out
@@ -279,8 +338,6 @@ canvas.create_line(15, 455, 818, 455, fill="#000", width=2)
 skilllabel = tk.Label(win, text="SKILL BASES", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
 skilllabel.place(x=15, y=428)
 # skills
-skills = {}
-skill_list = db.orderedselecectedfindall("cpr.skills", "name", "name")
 display_skills = []
 skill_list_items =tk.Variable(win, value=display_skills)
 skills_listbox = tk.Listbox(win, listvariable=skill_list_items, height=8, width=20, font=("Arial", 12), bg='#fff', fg='#000')
@@ -289,6 +346,37 @@ skills_scrollbar = ttk.Scrollbar(win, orient="vertical", command=skills_listbox.
 skills_listbox.configure(yscrollcommand=skills_scrollbar.set)
 skills_scrollbar.pack(side="right", fill="y")
 skills_scrollbar.place(x=192, y=460, height=155)
+# Skills combo
+skills = db.orderedselecectedfindall("cpr.skills","name","name")
+skill_names = []
+for skill in skills:
+    skill_names.append(skill[0])
+skill_value = tk.StringVar()
+skill_combo = ttk.Combobox(win, width = 25, textvariable = skill_value)
+skill_combo['values'] = skill_names
+skill_combo['state'] = 'readonly'
+skill_combo.current(0)
+skill_combo.place(x=230, y=500)
+skillname_label = tk.Label(win, text="Skill Name", font=("Arial", 10), bg='#fff', fg='#000')
+skillname_label.place(x=230, y=475)
+skill_value = tk.StringVar()
+skillvalue_combo = ttk.Combobox(win, width = 2, textvariable = skill_value)
+skillvalue_combo['values'] = [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+skillvalue_combo['state'] = 'readonly'
+skillvalue_combo.current(0)
+skillvalue_combo.place(x=425, y=500)
+skillvalue_label = tk.Label(win, text="Value", font=("Arial", 10), bg='#fff', fg='#000')
+skillvalue_label.place(x=425, y=475)
+skillnotes_label = tk.Label(win, text="Notes", font=("Arial", 10), bg='#fff', fg='#000')
+skillnotes_label.place(x=230, y=535)
+skillnotes_text = tk.Text(win, height=1, width=30, font=("Arial", 10), bg='#fff', fg='#000')
+skillnotes_text.place(x=280, y=535)
+skilladd_button = tk.Button(win, text="Add", font=("Arial", 10), bg='#a32', fg='#fff', command=skilladd)
+skilladd_button.place(x=600, y=500)
+skillupdate_button = tk.Button(win, text="Update", font=("Arial", 10), bg='#a32', fg='#fff', command=skillupdate)
+skillupdate_button.place(x=725, y=500)
+skillremove_button = tk.Button(win, text="Remove", font=("Arial", 10), bg='#a32', fg='#fff', command=skillremove)
+skillremove_button.place(x=650, y=500)
 # equipment divider
 rectangle = canvas.create_rectangle(15, 620, 135, 645, fill="#a32", outline="#a32", width=3)
 # equipment cut out
