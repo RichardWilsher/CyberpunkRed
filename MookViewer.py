@@ -22,13 +22,6 @@ def loadmooks(id):
                 if value != "1":
                     temptype = dbt.find("cpr.type","id", str(value))
                     mooktype = temptype[0][1]
-            if attribute[0] == "headsp" or attribute[0] == "bodysp":
-                armourtype = dbt.find("cpr.armour","id", str(value))
-                armourmodifier = int(armourtype[0][3])
-                if attribute[0] == "headsp":
-                    mookheadarmour =  [armourtype[0][1], armourtype[0][2]]
-                else :
-                    mookbodyarmour = [armourtype[0][1], armourtype[0][2]]
             if attribute[0] == "rep":
                 rep = mookentry[index]
         else:
@@ -36,6 +29,25 @@ def loadmooks(id):
                 mookname = mookentry[index]
             if attribute[0] == "location":
                 mooklocation = mookentry[index]
+    headarm = dbt.find("cpr.mook_head_armour","mookid", str(id))
+    harmourtype = dbt.find("cpr.armour","id", str(headarm[0][2]))
+    bodyarm = dbt.find("cpr.mook_body_armour","mookid", str(id))
+    barmourtype = dbt.find("cpr.armour","id", str(bodyarm[0][2]))
+    if headarm[0][3] == "y":
+        headsp = int(harmourtype[0][2]) + 1
+        headarmourname = "(TUp) " + harmourtype[0][1]
+    else:
+        headsp = harmourtype[0][2]
+        headarmourname = harmourtype[0][1]
+    if bodyarm[0][3] == "y":
+        bodyarmourname = "(TUp) " +barmourtype[0][1]
+        bodysp = int(barmourtype[0][2]) + 1
+    else:
+        bodysp = barmourtype[0][2]
+        bodyarmourname = barmourtype[0][1]
+    mookheadarmour = [headarmourname, str(headsp)]
+    mookbodyarmour = [bodyarmourname, str(bodysp)]
+    armourmodifier = int(barmourtype[0][3])
 
     stats = dbt.find("cpr.mook_stat", "mookid", str(id))
     statTitles = dbt.findall("cpr.stats")
