@@ -40,6 +40,25 @@ def calc_hp(*arg):
     seriouslywounded = math.ceil(hp/2)
     mookseriouslywounded_label.config(text=str(seriouslywounded))
 
+def changerole(*arg):
+    if role_combo.get() == 'none':
+        roleability_label.config(text="Role Ability:")
+        roleability_combo.place_forget()
+        roleability_label.place_forget()
+    else:
+        roleability_combo.place(x=455, y=82)
+        roleability_label.place(x=310, y=82)
+        roleabilityname = db.find("cpr.roles","name", role_combo.get())
+        roleability_label.config(text=roleabilityname[0][1] +":")
+        
+def change_type(*arg):
+    if type_combo.get() == 'Mook':
+        mooktype_combo.place(x=560, y=15)
+        mooktype_label.place(x=440, y=15)
+    else:
+        mooktype_combo.place_forget()
+        mooktype_label.place_forget()
+
 def save():
     print("save")
     if headtup_var.get() == 1:
@@ -104,17 +123,6 @@ rectangle = canvas.create_rectangle(9, 9, w-3, h-3, fill="#ddd", outline="#ddd",
 rectangle = canvas.create_rectangle(5, 5, w-7, h-7, fill="white", outline="#ccc", width=2)
 canvas.pack()
 
-type_label = tk.Label(win, text="Type:", font=("Arial", 12), bg='#fff', fg='#000')
-type_label.place(x=10, y=15)
-type_v = tk.StringVar()
-type_combo = ttk.Combobox(win, width = 5, textvariable = type_v)
-mastertype = db.selectedfindall("cpr.type", "name")
-type_combo['values'] = mastertype
-type_combo['state'] = 'readonly'
-type_combo.current(0)
-type_combo.place(x=80, y=15)
-mooktype_label = tk.Label(win, text="Mook Type:", font=("Arial", 12), bg='#fff', fg='#000')
-mooktype_label.place(x=440, y=15)
 mooktype_v = tk.StringVar()
 mooktype_combo = ttk.Combobox(win, width = 20, textvariable = mooktype_v)
 mooktype = db.selectedfindall("cpr.mook_type", "name")
@@ -125,6 +133,18 @@ mooktype_combo['values'] = mooktypes
 mooktype_combo['state'] = 'readonly'
 mooktype_combo.current(0)
 mooktype_combo.place(x=560, y=15)
+mooktype_label = tk.Label(win, text="Mook Type:", font=("Arial", 12), bg='#fff', fg='#000')
+mooktype_label.place(x=440, y=15)
+type_label = tk.Label(win, text="Type:", font=("Arial", 12), bg='#fff', fg='#000')
+type_label.place(x=10, y=15)
+type_v = tk.StringVar()
+type_v.trace_add('write', change_type)
+type_combo = ttk.Combobox(win, width = 5, textvariable = type_v)
+mastertype = db.selectedfindall("cpr.type", "name")
+type_combo['values'] = mastertype
+type_combo['state'] = 'readonly'
+type_combo.current(0)
+type_combo.place(x=80, y=15)
 name_label = tk.Label(win, text="Name:", font=("Arial", 12), bg='#fff', fg='#000')
 name_label.place(x=10, y=55)
 mooknaname_text = tk.Text(win, height=1, width=20, font=("Arial", 12), bg='#fff', fg='#000')
@@ -136,10 +156,19 @@ rep_combo = ttk.Combobox(win, width = 2, textvariable = rep_v)
 rep_combo['values'] = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10')
 rep_combo['state'] = 'readonly'
 rep_combo.current(0)
-rep_combo.place(x=435, y=55)
+rep_combo.place(x=455, y=55)
+roleability_label = tk.Label(win, text="Role Ability:", font=("Arial", 12), bg='#fff', fg='#000')
+roleability_label.place(x=310, y=82)
+roleability_v = tk.StringVar()
+roleability_combo = ttk.Combobox(win, width = 2, textvariable = roleability_v)
+roleability_combo['values'] = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10')
+roleability_combo['state'] = 'readonly'
+roleability_combo.current(0)
+roleability_combo.place(x=455, y=82)
 role_label = tk.Label(win, text="Role:", font=("Arial", 12), bg='#fff', fg='#000')
 role_label.place(x=10, y=82)
 role_v = tk.StringVar()
+role_v.trace_add('write', changerole)
 role_combo = ttk.Combobox(win, width = 10, textvariable = role_v)
 roles = db.orderedselecectedfindall("cpr.roles", "name", "name")
 role_combo['values'] = roles
@@ -153,15 +182,6 @@ for index,role in enumerate(roles):
         position = index
 role_combo.current(position)
 role_combo.place(x=80, y=82)
-roleability_label = tk.Label(win, text="Role Ability:", font=("Arial", 12), bg='#fff', fg='#000')
-roleability_label.place(x=310, y=82)
-roleability_v = tk.StringVar()
-roleability_combo = ttk.Combobox(win, width = 2, textvariable = roleability_v)
-roleability_combo['values'] = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10')
-roleability_combo['state'] = 'readonly'
-roleability_combo.current(0)
-roleability_combo.place(x=435, y=82)
-
 location_label = tk.Label(win, text="Location:", font=("Arial", 12), bg='#fff', fg='#000')
 location_label.place(x=310, y=110)
 location_text = tk.Text(win, height=1, width=20, font=("Arial", 12), bg='#fff', fg='#000')
