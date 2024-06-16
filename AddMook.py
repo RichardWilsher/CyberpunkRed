@@ -62,10 +62,18 @@ def change_type(*arg):
 def change_armour(*arg):
     global headsp_label
     global bodysp_label
-    armour_value = db.find("cpr.armour","name", headsp_combo.get())
-    headsp_label.config(text=armour_value[0][2])
-    armour_value = db.find("cpr.armour","name", bodysp_combo.get())
-    bodysp_label.config(text=armour_value[0][2])
+    try: 
+        armour_value = db.find("cpr.armour","name", headsp_combo.get())
+        headsp = armour_value[0][2]
+    except Exception:
+        headsp = 4
+    headsp_label.config(text=headsp)
+    try:
+        armour_value = db.find("cpr.armour","name", bodysp_combo.get())
+        bodysp = armour_value[0][2]
+    except Exception:
+        bodysp = 4
+    bodysp_label.config(text=bodysp)
 
 def save():
     print("save")
