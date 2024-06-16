@@ -112,7 +112,7 @@ rep_combo['state'] = 'readonly'
 rep_combo.current(0)
 rep_combo.place(x=435, y=55)
 role_label = tk.Label(win, text="Role:", font=("Arial", 12), bg='#fff', fg='#000')
-role_label.place(x=10, y=96)
+role_label.place(x=10, y=82)
 role_v = tk.StringVar()
 role_combo = ttk.Combobox(win, width = 10, textvariable = role_v)
 roles = db.orderedselecectedfindall("cpr.roles", "name", "name")
@@ -126,26 +126,31 @@ for index,role in enumerate(roles):
     if string == "none":
         position = index
 role_combo.current(position)
-role_combo.place(x=80, y=96)
+role_combo.place(x=80, y=82)
 roleability_label = tk.Label(win, text="Role Ability:", font=("Arial", 12), bg='#fff', fg='#000')
-roleability_label.place(x=310, y=96)
+roleability_label.place(x=310, y=82)
 roleability_v = tk.StringVar()
 roleability_combo = ttk.Combobox(win, width = 2, textvariable = roleability_v)
 roleability_combo['values'] = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10')
 roleability_combo['state'] = 'readonly'
 roleability_combo.current(0)
-roleability_combo.place(x=435, y=96)
+roleability_combo.place(x=435, y=82)
+
+location_label = tk.Label(win, text="Location:", font=("Arial", 12), bg='#fff', fg='#000')
+location_label.place(x=310, y=110)
+location_text = tk.Text(win, height=1, width=20, font=("Arial", 12), bg='#fff', fg='#000')
+location_text.place(x=435, y=110)
 
 seriouslywoundedlabel = tk.Label(win, text="SERIOUSLY WOUNDED", font=("Arial", 8, "bold"), bg='#fff', fg='#000', wraplength=100, justify="left")
 seriouslywoundedlabel.place(x=510, y=47)
 mookseriouslywounded_label = tk.Label(win, text="10", font=("Arial", 12), bg='#fff', fg='#000')
 mookseriouslywounded_label.place(x=640, y=55)
 deathsavelabel = tk.Label(win, text="DEATH SAVE", font=("Arial", 8, "bold"), bg='#fff', fg='#000', wraplength=100, justify="left")
-deathsavelabel.place(x=510, y=102)
+deathsavelabel.place(x=510, y=85)
 mookdeathsave_label = tk.Label(win, text="2", font=("Arial", 12), bg='#fff', fg='#000')
-mookdeathsave_label.place(x=640, y=96)
+mookdeathsave_label.place(x=640, y=82)
 hplabel = tk.Label(win, text="HP", font=("Arial", 14, "bold"), bg='#fff', fg='#000')
-hplabel.place(x=687, y=46)
+hplabel.place(x=687, y=36)
 mookhp_label = tk.Label(win, text="20", font=("Arial", 20), bg='#fff', fg='#000')
 mookhp_label.place(x=740, y=69)
 
@@ -351,8 +356,8 @@ skills = db.orderedselecectedfindall("cpr.skills","name","name")
 skill_names = []
 for skill in skills:
     skill_names.append(skill[0])
-skill_value = tk.StringVar()
-skill_combo = ttk.Combobox(win, width = 25, textvariable = skill_value)
+skill_name = tk.StringVar()
+skill_combo = ttk.Combobox(win, width = 25, textvariable = skill_name)
 skill_combo['values'] = skill_names
 skill_combo['state'] = 'readonly'
 skill_combo.current(0)
@@ -448,14 +453,41 @@ equipment_scrollbar = ttk.Scrollbar(win, orient="vertical", command=equipment_li
 equipment_listbox.configure(yscrollcommand=equipment_scrollbar.set)
 equipment_scrollbar.pack(side="right", fill="y")
 equipment_scrollbar.place(x=192, y=770, height=79)
+# Cyberwear combo
+cyberwear = db.orderedselecectedfindall("cpr.cyberwear", "name", "name")
+cyberwear_names = []
+for cyber in cyberwear:
+    cyberwear_names.append(cyber[0])
+cyberwear_value = tk.StringVar()
+cyberwear_combo = ttk.Combobox(win, width = 20, textvariable = cyberwear_value)
+cyberwear_combo['values'] = cyberwear_names
+cyberwear_combo['state'] = 'readonly'
+cyberwear_combo.current(0)
+cyberwear_combo.place(x=230, y=800)
+cyberwearname_label = tk.Label(win, text="Cyberwear Name", font=("Arial", 10), bg='#fff', fg='#000')
+cyberwearname_label.place(x=230, y=775)
+cyberwearquantity_label = tk.Label(win, text="Quantity", font=("Arial", 10), bg='#fff', fg='#000')  
+cyberwearquantity_label.place(x=425, y=775)
+cyberwear_quantity = tk.StringVar()
+cyberwearquantity_combo = ttk.Combobox(win, width = 2, textvariable = cyberwear_quantity)
+cyberwearquantity_combo['values'] = [1,2]
+cyberwearquantity_combo['state'] = 'readonly'
+cyberwearquantity_combo.current(0)
+cyberwearquantity_combo.place(x=425, y=800)
+cyberwearnotes_label = tk.Label(win, text="Notes", font=("Arial", 10), bg='#fff', fg='#000')
+cyberwearnotes_label.place(x=230, y=830)
+cyberwearnotes_text = tk.Text(win, height=1, width=30, font=("Arial", 10), bg='#fff', fg='#000')
+cyberwearnotes_text.place(x=280, y=830)
+cyberwearadd_button = tk.Button(win, text="Add", font=("Arial", 10), bg='#a32', fg='#fff', command=cyberwearadd)
+cyberwearadd_button.place(x=600, y=800)
+cyberwearupdate_button = tk.Button(win, text="Update", font=("Arial", 10), bg='#a32', fg='#fff', command=cyberwearupdate)
+cyberwearupdate_button.place(x=725, y=800)
+cyberwearremove_button = tk.Button(win, text="Remove", font=("Arial", 10), bg='#a32', fg='#fff', command=cyberwearremove)
+cyberwearremove_button.place(x=650, y=800)
 # buttons
 save_button = tk.Button(win, text="SAVE", font=("Arial", 12, "bold"), bg='#a32', fg='#fff', command=save)
 save_button.place(x=10, y=855)
 clear_button = tk.Button(win, text="CLEAR", font=("Arial", 12, "bold"), bg='#a32', fg='#fff', command=clear)
 clear_button.place(x=100, y=855)
-
-
-
-
 
 win.mainloop()
