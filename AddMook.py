@@ -59,6 +59,14 @@ def change_type(*arg):
         mooktype_combo.place_forget()
         mooktype_label.place_forget()
 
+def change_armour(*arg):
+    global headsp_label
+    global bodysp_label
+    armour_value = db.find("cpr.armour","name", headsp_combo.get())
+    headsp_label.config(text=armour_value[0][2])
+    armour_value = db.find("cpr.armour","name", bodysp_combo.get())
+    bodysp_label.config(text=armour_value[0][2])
+
 def save():
     print("save")
     if headtup_var.get() == 1:
@@ -314,13 +322,20 @@ rectangle = canvas.create_rectangle(311, 266, 371, 309, fill="#fff", outline="#a
 # head body shield labels
 canvas.create_text(26, 264, text="HEAD", font=("Arial", 10, "bold"), fill='#ffffff', angle=90, anchor="w")
 canvas.create_text(26, 308, text="BODY", font=("Arial", 10, "bold"), fill='#ffffff', angle=90, anchor="w")
+# SP labels
+headsp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
+headsp_label.place(x=335, y=232)
+bodysp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
+bodysp_label.place(x=335, y=280)
 # armour combo boxes
 armours = db.selectedfindall("cpr.armour","name")
 armour_names = []
 for armour in armours:
     armour_names.append(armour[0]) 
 headsp_var = tk.StringVar()
+headsp_var.trace_add('write', change_armour)
 bodysp_var = tk.StringVar()
+bodysp_var.trace_add('write', change_armour)
 headsp_combo = ttk.Combobox(win, width = 20, textvariable = headsp_var)
 headsp_combo['values'] = armour_names
 headsp_combo['state'] = 'readonly'
@@ -331,11 +346,6 @@ bodysp_combo['values'] = armour_names
 bodysp_combo['state'] = 'readonly'
 bodysp_combo.current(0)
 bodysp_combo.place(x=40, y=280)
-# SP labels
-headsp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
-headsp_label.place(x=335, y=232)
-bodysp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
-bodysp_label.place(x=335, y=280)
 # tech upgrade checkboxes
 headtup_var = tk.IntVar()
 headtup_check = tk.Checkbutton(win, text="Tech Upgraded?", variable=headtup_var, onvalue=1, offvalue=0, bg='#fff', fg='#000')
