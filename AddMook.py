@@ -2,6 +2,7 @@ import databaseTools
 import mook
 import tkinter as tk
 from tkinter import ttk 
+import math
 import numbers
 
 db = databaseTools.databaseTools()
@@ -22,6 +23,22 @@ stats = {
 will = 2
 body = 2
 armour_modifier = 0 
+
+
+def calc_hp(*arg):
+    try:
+        body = body_combo.get()
+    except Exception:
+        body = 2
+    try:
+        will = will_combo.get()
+    except Exception:
+        will = 2
+    hp = 10 + (5 *(math.ceil((int(body) + int(will))/2)))
+    mookhp_label.config(text=str(hp))
+    mookdeathsave_label.config(text=str(body))
+    seriouslywounded = math.ceil(hp/2)
+    mookseriouslywounded_label.config(text=str(seriouslywounded))
 
 def save():
     print("save")
@@ -224,6 +241,7 @@ cool_combo['state'] = 'readonly'
 cool_combo.current(0)
 cool_combo.place(x=375, y=160)
 will_value = tk.StringVar()
+will_value.trace_add('write', calc_hp)
 will_combo = ttk.Combobox(win, width = 2, textvariable = will_value)
 will_combo['values'] = standardstats
 will_combo['state'] = 'readonly'
@@ -242,6 +260,7 @@ move_combo['state'] = 'readonly'
 move_combo.current(0)
 move_combo.place(x=615, y=160)  
 body_value = tk.StringVar()
+body_value.trace_add('write', calc_hp)
 body_combo = ttk.Combobox(win, width = 2, textvariable = body_value)
 body_combo['values'] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14]
 body_combo['state'] = 'readonly'
