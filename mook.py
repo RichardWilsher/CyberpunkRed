@@ -3,7 +3,7 @@ import math
 class mook(object):
 
 
-    def __init__(self, name, mooktype, rep, headarmour, bodyarmour, stats, weapons, role, skills, equipment, cyberwear, location, will, body, armourmodifier):
+    def __init__(self, name, mooktype, rep, headarmour, bodyarmour, stats, weapons, role, skills, equipment, cyberwear, location, armourmodifier):
         self.name = name
         self.mooktype = mooktype
         self.headarmour = headarmour
@@ -16,9 +16,9 @@ class mook(object):
         self.location = location
         self.role = role
         self.skills = skills
-        self.hp = 10 + (5 *(math.ceil((int(body) + int(will))/2)))
+        self.hp = 10 + (5 *(math.ceil((int(stats['Body']) + int(stats['Will']))/2)))
         self.seriouslywounded = math.ceil(self.hp/2)
-        self.deathsave = body
+        self.deathsave = stats['Body']
         self.armourmodifier = armourmodifier
 
     def display(self):

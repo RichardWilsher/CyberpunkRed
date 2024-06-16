@@ -48,7 +48,6 @@ def loadmooks(id):
     mookheadarmour = [headarmourname, str(headsp)]
     mookbodyarmour = [bodyarmourname, str(bodysp)]
     armourmodifier = int(barmourtype[0][3])
-
     stats = dbt.find("cpr.mook_stat", "mookid", str(id))
     statTitles = dbt.findall("cpr.stats")
     mookstats = {}
@@ -57,10 +56,6 @@ def loadmooks(id):
         for statTitle in statTitles:
             if statTitle[0] == stat[2]:
                 statName = statTitle[1]
-                if statTitle[1] == "Will":
-                    will = stat[3]
-                if statTitle[1] == "Body":
-                    body = stat[3]  
                 if statTitle[2] == "y":
                     mod = 1
             statvalue = stat[3]
@@ -134,7 +129,7 @@ def loadmooks(id):
                 if cyberwear[4] != None:
                     printStr += " (" + str(cyberwear[4]) + ")"
                 mookcyberwear.append(printStr)
-    newmook = mook.mook(mookname, mooktype, rep, mookheadarmour, mookbodyarmour, mookstats, weaponlist, mookrole, mookskills, mookequipment, mookcyberwear, mooklocation, will, body, armourmodifier)
+    newmook = mook.mook(mookname, mooktype, rep, mookheadarmour, mookbodyarmour, mookstats, weaponlist, mookrole, mookskills, mookequipment, mookcyberwear, mooklocation, armourmodifier)
     return newmook
 
 def display_mook(mookposition):
