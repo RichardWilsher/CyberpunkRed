@@ -703,9 +703,12 @@ equipmentname_label = tk.Label(win, text="Equipment Name", font=("Arial", 10), b
 equipmentname_label.place(x=230, y=655)
 equipmentquantity_label = tk.Label(win, text="Quantity", font=("Arial", 10), bg='#fff', fg='#000')
 equipmentquantity_label.place(x=425, y=655)
+equipment_quantityvalue = []
+for i in range(1, 101):
+    equipment_quantityvalue.append(i)
 equipment_quantity = tk.StringVar()
 equipmentquantity_combo = ttk.Combobox(win, width = 2, textvariable = equipment_quantity)
-equipmentquantity_combo['values'] = [1,2,3,4,5,6,7,8,9,10,15,20,25,30,40,50,60,70,80,90,100]
+equipmentquantity_combo['values'] = equipment_quantityvalue
 equipmentquantity_combo['state'] = 'readonly'
 equipmentquantity_combo.current(0)
 equipmentquantity_combo.place(x=425, y=680)

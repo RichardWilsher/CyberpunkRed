@@ -6,7 +6,7 @@ import random
 
 def initaliseinitatives(initativelist):
     # method to initialise initative array
-    for i in range(35):
+    for _ in range(35):
         initativelist.append("empty")
     return initativelist
 
