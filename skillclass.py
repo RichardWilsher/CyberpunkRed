@@ -5,4 +5,4 @@ class skill:
     name: str
     value: int
     notes: str
-    dbposition : int
+    id : int

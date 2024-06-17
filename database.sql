@@ -82,7 +82,7 @@ id int,
 mookid int,
 equipmentid int,
 quantity varchar(8),
-subinformation varchar(60)
+notes varchar(60)
 );
 ALTER TABLE cpr.mook_equipment CHANGE COLUMN id id INT NOT NULL AUTO_INCREMENT , ADD PRIMARY KEY (id);
 

@@ -134,5 +134,6 @@ class mook(object):
 #     cyberwear: list
 #     location: str
 #     armourmodifier: int
+#     id : int
 # def getHP(self):
 #     return 10 + (5 *(math.ceil((int(self.body) + int(self.will))/2))) 

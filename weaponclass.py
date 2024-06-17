@@ -7,4 +7,4 @@ class weapon:
     qualityvalue : int
     damage : int
     rof : int
-    dbposition : int
+    id : int

@@ -5,4 +5,4 @@ class equipment:
     name : str
     quantity : int
     notes : str
-    dbposition : int
+    id : int

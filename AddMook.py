@@ -8,10 +8,6 @@ import weaponclass as wc
 import equipmentclass as ec
 import cyberwearclass as cc
 
-# TODO save_weapons()
-# TODO save_skills()
-# TODO save_equipment()
-# TODO save_cyberwear()
 # TODO add message boxes for error messages in save()
 # TODO add Entry for Tech/Medtech specialisations
 # TODO UI Tidyup
@@ -135,8 +131,8 @@ def save_mook():
     mook_type = db.find("cpr.mook_type","name", tempmook_type)[0][0]
     locatiom = location_entry.get()
     rep = rep_combo.get()
-    db.insert("cpr.tempmooks", ["name", "mook_type", "type", "location", "rep"], [name, mook_type, mtype, locatiom, rep], ["string", "int", "int", "string", "int"])
-    mookid = db.find("cpr.tempmooks","name", name)[0][0]
+    db.insert("cpr.mooks", ["name", "mook_type", "type", "location", "rep"], [name, mook_type, mtype, locatiom, rep], ["string", "int", "int", "string", "int"])
+    mookid = db.find("cpr.mooks","name", name)[0][0]
     return mookid
 
 def save_role(mookid):
@@ -144,14 +140,14 @@ def save_role(mookid):
     roleid = db.find("cpr.roles","name", role)[0][0]
     value = roleability_combo.get()
     if role == 'none':
-        db.insert("cpr.tempmook_role", ["mookid", "roleid"], [mookid, roleid], ["int", "int"])
+        db.insert("cpr.mook_role", ["mookid", "roleid"], [mookid, roleid], ["int", "int"])
     else:
-        db.insert("cpr.tempmook_role", ["mookid", "roleid", "value"], [mookid, roleid, value], ["int", "int", "int"])
+        db.insert("cpr.mook_role", ["mookid", "roleid", "value"], [mookid, roleid, value], ["int", "int", "int"])
 
 def save_stats(mookid):
     stats = [int_combo.get(), ref_combo.get(), dex_combo.get(), tech_combo.get(), cool_combo.get(), will_combo.get(), luck_combo.get(), move_combo.get(), body_combo.get(), emp_combo.get()]
     for index,stat in enumerate(stats):
-        db.insert("cpr.tempmook_stat", ["mookid", "statid", "value"], [mookid, index+1, stat], ["int", "int", "string"])
+        db.insert("cpr.mook_stat", ["mookid", "statid", "value"], [mookid, index+1, stat], ["int", "int", "string"])
 
 def save_armour(mookid):
     headsp = headsp_combo.get()
@@ -166,20 +162,34 @@ def save_armour(mookid):
         bodytup = 'y'
     else:
         bodytup = 'n'
-    db.insert("cpr.tempmook_head_armour", ["mookid", "armourid", "techupgraded"], [mookid, headid, headtup], ["int", "int", "string"])
-    db.insert("cpr.tempmook_body_armour", ["mookid", "armourid", "techupgraded"], [mookid, bodyid, bodytup], ["int", "int", "string"])
+    db.insert("cpr.mook_head_armour", ["mookid", "armourid", "techupgraded"], [mookid, headid, headtup], ["int", "int", "string"])
+    db.insert("cpr.mook_body_armour", ["mookid", "armourid", "techupgraded"], [mookid, bodyid, bodytup], ["int", "int", "string"])
 
 def save_weapons(mookid):
-    print("save weapons")
+    for weapon in mook_weapons:
+        quality = weapon.quality
+        qualityid = db.find("cpr.weapon_quality","name", quality)[0][0]
+        db.insert("cpr.mook_weapon", ["mookid", "weaponid", "qualityid"], [mookid, weapon.id, qualityid], ["int", "int", "int"])
 
 def save_skills(mookid):
-    print("save skills")
+    for skill in mook_skills:
+        value = skill.value
+        notes = skill.notes
+        db.insert("cpr.mook_skill", ["mookid", "skillid", "value", "notes"], [mookid, skill.id, value, notes], ["int", "int", "string", "string"])
 
 def save_equipment(mookid):
-    print("save equipment")
+    for equipment in mook_equipment:
+        quantity = equipment.quantity
+        notes = equipment.notes
+        db.insert("cpr.mook_equipment", ["mookid", "equipmentid", "quantity", "notes"], [mookid, equipment.id, quantity, notes], ["int", "int", "string", "string"])
+        
 
 def save_cyberwear(mookid):
-    print("save cyberwear")   
+    for cyberwear in mook_cyberwear:
+        cyberwearid = cyberwear.id
+        quantity = cyberwear.quantity
+        notes = cyberwear.notes
+        db.insert("cpr.mook_cyberwear", ["mookid", "cyberwearid", "quantity", "notes"], [mookid, cyberwearid, quantity, notes], ["int", "int", "string", "string"])  
 
 def save():
     readytocommit = True
@@ -207,7 +217,7 @@ def save():
         save_skills(mookid)
         save_equipment(mookid)
         save_cyberwear(mookid)
-        # clear()
+        clear()
 
 def weaponadd():
     global mook_weapons

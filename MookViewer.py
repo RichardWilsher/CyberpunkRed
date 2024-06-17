@@ -106,7 +106,7 @@ def loadmooks(id):
                     value = skill[3] + " (" + str(int(skill[3]) - int(armourmodifier)) + ")"
                 else:
                     value = skill[3]
-                if skill[4] != None:
+                if skill[4] != None and skill[4] != "":
                     key = str(skillTitle[1]) + " (" + skill[4] + ")" 
                 else:
                     key = skillTitle[1]
@@ -118,9 +118,9 @@ def loadmooks(id):
         for equipmentTitle in equipmentTable:
             if equipmentTitle[0] == equipment[2]:
                 printStr = equipmentTitle[2]
-                if equipment[3] != '0':
+                if equipment[3] != '0' and equipment[3] != '1':
                     printStr += " x" + str(equipment[3])
-                if equipment[4] != None:
+                if equipment[4] != None and equipment[4] != "":
                     printStr += " (" + str(equipment[4]) + ")"
                 mookequipment.append(printStr)
     cyberwearTable = dbt.findall("cpr.cyberwear")
@@ -130,9 +130,9 @@ def loadmooks(id):
         for cyberwearTitle in cyberwearTable:
             if cyberwearTitle[0] == cyberwear[2]:
                 printStr = cyberwearTitle[2]
-                if cyberwear[3] != '0':
+                if cyberwear[3] != '0' and cyberwear[3] != '1':
                     printStr += " x" + str(cyberwear[3])
-                if cyberwear[4] != None:
+                if cyberwear[4] != None and cyberwear[4] != "":
                     printStr += " (" + str(cyberwear[4]) + ")"
                 mookcyberwear.append(printStr)
     newmook = mook.mook(mookname, mooktype, rep, mookheadarmour, mookbodyarmour, mookstats, weaponlist, mookrole, mookskills, mookequipment, mookcyberwear, mooklocation, armourmodifier)
