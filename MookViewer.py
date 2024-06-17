@@ -4,37 +4,36 @@ import numbers
 import mook
 import tkinter as tk
 from tkinter import ttk 
+import math
 
-# TODO replace Mook class with dataclass
-# TODO refactor loadmooks() into seperate functions to simplify code
 # TODO add type combo box for type (mook, NPC, PC)
 # TODO potential add combo box for mook type (mook, hardened mook, etc)
-# TODO switch camelcase to snakecase
 
 weaponlist = []
 
-def loadmooks(id):
+def loadbasemook(id, newmook):
+    # complexity 20/15
     mookentry = dbt.find("cpr.mooks", "id", str(id))[0]
     attributes = dbt.describe("cpr.mooks")
-    armourmodifier = 0
-    mooktype = ''
     for index,attribute in enumerate(attributes):  
         if isinstance(mookentry[index], numbers.Number):
             value = mookentry[index]
             if attribute[0] == "mook_type":
                 temptype = dbt.find("cpr.mook_type","id", str(value))
-                mooktype = temptype[0][1]
-            if attribute[0] == "type":
-                if value != "1":
-                    temptype = dbt.find("cpr.type","id", str(value))
-                    mooktype = temptype[0][1]
+                newmook.mooktype = temptype[0][1]
+            if attribute[0] == "type" and value != "1":
+                temptype = dbt.find("cpr.type","id", str(value))
+                newmook.mooktype = temptype[0][1]
             if attribute[0] == "rep":
-                rep = mookentry[index]
+                newmook.rep = mookentry[index]
         else:
             if attribute[0] == "name":
-                mookname = mookentry[index]
+                newmook.name = mookentry[index]
             if attribute[0] == "location":
-                mooklocation = mookentry[index]
+                newmook.location = mookentry[index]
+    return newmook
+
+def loadmookarmour(id, newmook):
     headarm = dbt.find("cpr.mook_head_armour","mookid", str(id))
     harmourtype = dbt.find("cpr.armour","id", str(headarm[0][2]))
     bodyarm = dbt.find("cpr.mook_body_armour","mookid", str(id))
@@ -51,103 +50,138 @@ def loadmooks(id):
     else:
         bodysp = barmourtype[0][2]
         bodyarmourname = barmourtype[0][1]
-    mookheadarmour = [headarmourname, str(headsp)]
-    mookbodyarmour = [bodyarmourname, str(bodysp)]
-    armourmodifier = int(barmourtype[0][3])
+    newmook.headarmour = [headarmourname, str(headsp)]
+    newmook.bodyarmour = [bodyarmourname, str(bodysp)]
+    newmook.armourmodifier = int(barmourtype[0][3])
+    return newmook
+
+def loadmookstats(id, newmook):
     stats = dbt.find("cpr.mook_stat", "mookid", str(id))
-    statTitles = dbt.findall("cpr.stats")
+    stattitles = dbt.findall("cpr.stats")
     mookstats = {}
     for index,stat in enumerate(stats):
         mod = 0
-        for statTitle in statTitles:
-            if statTitle[0] == stat[2]:
-                statName = statTitle[1]
-                if statTitle[2] == "y":
+        for stattitle in stattitles:
+            if stattitle[0] == stat[2]:
+                statname = stattitle[1]
+                if stattitle[2] == "y":
                     mod = 1
             statvalue = stat[3]
-        if(mod == 1 and armourmodifier != 0):
-            modvalue = int(statvalue) - int(armourmodifier)
-            mookstats[statName] = str(stat[3]) + " (" + str(modvalue) + ")"
+        if(mod == 1 and newmook.armourmodifier != 0):
+            modvalue = int(statvalue) - int(newmook.armourmodifier)
+            mookstats[statname] = str(stat[3]) + " (" + str(modvalue) + ")"
         else:
-            mookstats[statName] = stat[3]
-    weaponTypes = dbt.findall("cpr.weapons")
-    qualityTypes = dbt.findall("cpr.weapon_quality")
+            mookstats[statname] = stat[3]
+    newmook.stats = mookstats
+    return newmook
+
+def loadmookweapons(id, newmook):
+    # complexity 22/15
+    weapontypes = dbt.findall("cpr.weapons")
+    qualitytypes = dbt.findall("cpr.weapon_quality")
     weapons = dbt.find("cpr.mook_weapon","mookid", str(id))
     weaponlist = []
-    for index,weapon in enumerate(weapons):
-        for weaponType in weaponTypes:
-            if weaponType[0] == weapon[2]:
-                for quality in qualityTypes:
+    for index, weapon in enumerate(weapons):
+        for weapontype in weapontypes:
+            if weapontype[0] == weapon[2]:
+                for quality in qualitytypes:
                     if quality[0] == weapon[3]:
                         if quality[0] != 1:
-                            weaponname = quality[1] + " Quality " + weaponType[1]
+                            weaponname = quality[1] + " Quality " + weapontype[1]
                         else :
-                            weaponname = weaponType[1]
+                            weaponname = weapontype[1]
                         weaponlist.append(weaponname)
-    roleTitle = dbt.findall("cpr.roles")
+    newmook.weapons = weaponlist
+    return newmook
+
+def loadmookskills(id, newmook):
+    # complexity 33/15
+    roletitle = dbt.findall("cpr.roles")
     roles = dbt.find("cpr.mook_role","mookid", str(id))
-    mookrole = ''
     mookskills = {}
     for index,role in enumerate(roles):
-        for roleTitle in roleTitle:
-            if roleTitle[0] == role[2]:
-                mookrole = roleTitle[2]
+        for roletitle in roletitle:
+            if roletitle[0] == role[2]:
+                newmook.role = roletitle[2]
                 if role[2] != 1:
                     mookroleskill = role[3]
                     if role[4] != None:
                         mookroleskill += " (" + role[4] + ")"
-                    mookskills[roleTitle[1]] = mookroleskill
-    skillTitles = dbt.findall("cpr.skills")
+                    mookskills[roletitle[1]] = mookroleskill
+    skilltitles = dbt.findall("cpr.skills")
     skills = dbt.find("cpr.mook_skill","mookid", str(id))
     for index,skill in enumerate(skills):
-        for skillTitle in skillTitles:
-            if skillTitle[0] == skill[2]:
-                if armourmodifier != 0 and skillTitle[5] == "y":
-                    value = skill[3] + " (" + str(int(skill[3]) - int(armourmodifier)) + ")"
+        for skilltitle in skilltitles:
+            if skilltitle[0] == skill[2]:
+                if newmook.armourmodifier != 0 and skilltitle[5] == "y":
+                    value = skill[3] + " (" + str(int(skill[3]) - int(newmook.armourmodifier)) + ")"
                 else:
                     value = skill[3]
                 if skill[4] != None and skill[4] != "":
-                    key = str(skillTitle[1]) + " (" + skill[4] + ")" 
+                    key = str(skilltitle[1]) + " (" + skill[4] + ")" 
                 else:
-                    key = skillTitle[1]
+                    key = skilltitle[1]
                 mookskills[key] = value
-    equipmentTable = dbt.findall("cpr.equipment")
+    newmook.skills = mookskills
+    return newmook
+
+def loadmookequipment(id, newmook):
+    # complexity 16/15
+    equipmenttable = dbt.findall("cpr.equipment")
     equipment = dbt.find("cpr.mook_equipment","mookid", str(id))
     mookequipment = []
-    for index,equipment in enumerate(equipment):
-        for equipmentTitle in equipmentTable:
-            if equipmentTitle[0] == equipment[2]:
-                printStr = equipmentTitle[2]
+    for index, equipment in enumerate(equipment):
+        for equipmenttitle in equipmenttable:
+            if equipmenttitle[0] == equipment[2]:
+                printstr = equipmenttitle[2]
                 if equipment[3] != '0' and equipment[3] != '1':
-                    printStr += " x" + str(equipment[3])
+                    printstr += " x" + str(equipment[3])
                 if equipment[4] != None and equipment[4] != "":
-                    printStr += " (" + str(equipment[4]) + ")"
-                mookequipment.append(printStr)
-    cyberwearTable = dbt.findall("cpr.cyberwear")
+                    printstr += " (" + str(equipment[4]) + ")"
+                mookequipment.append(printstr)
+    newmook.equipment = mookequipment
+    return newmook
+
+def loadmookcyberwear(id, newmook):
+    # complexity 16/15
+    cyberweartable = dbt.findall("cpr.cyberwear")
     cyberwear = dbt.find("cpr.mook_cyberwear","mookid", str(id))
     mookcyberwear = []
-    for index,cyberwear in enumerate(cyberwear):
-        for cyberwearTitle in cyberwearTable:
-            if cyberwearTitle[0] == cyberwear[2]:
-                printStr = cyberwearTitle[2]
+    for index, cyberwear in enumerate(cyberwear):
+        for cyberweartitle in cyberweartable:
+            if cyberweartitle[0] == cyberwear[2]:
+                printstr = cyberweartitle[2]
                 if cyberwear[3] != '0' and cyberwear[3] != '1':
-                    printStr += " x" + str(cyberwear[3])
+                    printstr += " x" + str(cyberwear[3])
                 if cyberwear[4] != None and cyberwear[4] != "":
-                    printStr += " (" + str(cyberwear[4]) + ")"
-                mookcyberwear.append(printStr)
-    newmook = mook.mook(mookname, mooktype, rep, mookheadarmour, mookbodyarmour, mookstats, weaponlist, mookrole, mookskills, mookequipment, mookcyberwear, mooklocation, armourmodifier)
+                    printstr += " (" + str(cyberwear[4]) + ")"
+                mookcyberwear.append(printstr)
+    newmook.cyberwear = mookcyberwear
+    return newmook
+
+def loadmooks(id):
+    newmook = mook.mook("", "", 0, {}, {}, {}, [], "", {}, [], [], "", 0, id)
+    newmook = loadbasemook(id, newmook)
+    newmook = loadmookarmour(id, newmook)
+    newmook = loadmookstats(id, newmook)
+    newmook = loadmookweapons(id, newmook)
+    newmook = loadmookskills(id, newmook)
+    newmook = loadmookequipment(id, newmook)
+    newmook = loadmookcyberwear(id, newmook)
     return newmook
 
 def display_mook(mookposition):
     mooks[mookposition].display()
 
 def get_index(*arg):
-    mookrole_label['text'] = mooks[mookchoosen.current()].getRole()
-    mookrep_label['text'] = mooks[mookchoosen.current()].getRep()
-    mookseriouslywounded_label['text'] = mooks[mookchoosen.current()].getSeriouslyWounded()
-    mookdeathsave_label['text'] = mooks[mookchoosen.current()].getDeathSave()
-    mookhp_label['text'] = mooks[mookchoosen.current()].getHP()
-    stats = mooks[mookchoosen.current()].getStats()
+    mookrole_label['text'] = mooks[mookchoosen.current()].role
+    mookrep_label['text'] = mooks[mookchoosen.current()].rep
+    hp = mooks[mookchoosen.current()].gethp()
+    seriouslywounded = math.ceil(hp/2)
+    mookseriouslywounded_label['text'] = seriouslywounded
+    mookdeathsave_label['text'] = mooks[mookchoosen.current()].stats.get('Body')
+    mookhp_label['text'] = hp
+    stats = mooks[mookchoosen.current()].stats
     mookint_label['text'] = stats.get('Int')
     mookref_label['text'] = stats.get('Ref')
     mookdex_label['text'] = stats.get('Dex')
@@ -159,14 +193,14 @@ def get_index(*arg):
     mookbody_label['text'] = stats.get('Body')
     mookemp_label['text'] = stats.get('Emp')
     global weaponlist
-    weaponlist = mooks[mookchoosen.current()].getWeapons()
+    weaponlist = mooks[mookchoosen.current()].weapons
     mookweaponchoosen['value'] = tuple(weaponlist)
     mookweaponchoosen.current(0)
-    mookarmourhead_label['text'] = mooks[mookchoosen.current()].getHeadArmour()[0]
-    mookarmourheadsp_label['text'] = mooks[mookchoosen.current()].getHeadArmour()[1]
-    mookarmourbody_label['text'] = mooks[mookchoosen.current()].getBodyArmour()[0]
-    mookarmourbodysp_label['text'] = mooks[mookchoosen.current()].getBodyArmour()[1]
-    mookskilllist = mooks[mookchoosen.current()].getSkills()
+    mookarmourhead_label['text'] = mooks[mookchoosen.current()].headarmour[0]
+    mookarmourheadsp_label['text'] = mooks[mookchoosen.current()].headarmour[1]
+    mookarmourbody_label['text'] = mooks[mookchoosen.current()].bodyarmour[0]
+    mookarmourbodysp_label['text'] = mooks[mookchoosen.current()].bodyarmour[1]
+    mookskilllist = mooks[mookchoosen.current()].skills
     count = 1
     mookskilldisplay = ''
     for x,y in mookskilllist.items():
@@ -175,7 +209,7 @@ def get_index(*arg):
             mookskilldisplay += " • "
         count += 1
     mookskills_label['text'] = mookskilldisplay
-    mookequipmentlist = mooks[mookchoosen.current()].getEquipment()
+    mookequipmentlist = mooks[mookchoosen.current()].equipment
     count = 1
     mookequipmentdisplay = ''
     for x in mookequipmentlist:
@@ -184,7 +218,7 @@ def get_index(*arg):
             mookequipmentdisplay +=  " • "
         count += 1
     mookequipment_label['text'] = mookequipmentdisplay
-    mookcyberwearlist = mooks[mookchoosen.current()].getCyberwear()
+    mookcyberwearlist = mooks[mookchoosen.current()].cyberwear
     count = 1
     mookcyberwaredisplay = ''
     for x in mookcyberwearlist:
@@ -437,7 +471,7 @@ mookchoosen.place(x=80, y=28)
 # name organise
 mooklist = []
 for mook in mooks:
-    mooklist.append(mook.getName())
+    mooklist.append(mook.name)
 
 mookchoosen['values'] = tuple(mooklist) 
 mookchoosen['state'] = 'readonly'
