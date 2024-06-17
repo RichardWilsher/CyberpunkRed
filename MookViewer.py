@@ -5,6 +5,12 @@ import mook
 import tkinter as tk
 from tkinter import ttk 
 
+# TODO replace Mook class with dataclass
+# TODO refactor loadmooks() into seperate functions to simplify code
+# TODO add type combo box for type (mook, NPC, PC)
+# TODO potential add combo box for mook type (mook, hardened mook, etc)
+# TODO switch camelcase to snakecase
+
 weaponlist = []
 
 def loadmooks(id):

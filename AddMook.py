@@ -8,11 +8,12 @@ import weaponclass as wc
 import equipmentclass as ec
 import cyberwearclass as cc
 
-# TODO save_weapons
-# TODO save_skills
-# TODO save_equipment
-# TODO save_cyberwear
-# TODO add Entry for Tech?Medtech specialisations
+# TODO save_weapons()
+# TODO save_skills()
+# TODO save_equipment()
+# TODO save_cyberwear()
+# TODO add message boxes for error messages in save()
+# TODO add Entry for Tech/Medtech specialisations
 # TODO UI Tidyup
 
 db = databaseTools.databaseTools()
