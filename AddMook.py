@@ -7,8 +7,8 @@ import skillclass as sc
 import weaponclass as wc
 import equipmentclass as ec
 import cyberwearclass as cc
+import tkinter.messagebox
 
-# TODO add message boxes for error messages in save()
 # TODO add Entry for Tech/Medtech specialisations
 # TODO UI Tidyup
 
@@ -122,6 +122,15 @@ def clear():
     cyberwearquantity_combo.current(0)
     cyberwearnotes_entry.delete(0, tk.END)
     cyberwear_listbox.delete(0, tk.END)
+    # clear arrays
+    global mook_weapons
+    global mook_skills
+    global mook_equipment
+    global mook_cyberwear
+    mook_weapons.clear()
+    mook_skills.clear()
+    mook_equipment.clear()
+    mook_cyberwear.clear()
 
 def save_mook():
     name = mookname_entry.get()
@@ -196,19 +205,16 @@ def save():
     mookid = -1
     if mookname_entry.get() == '':
         readytocommit = False
-        # error message here
-        print("name entry is empty")
+        tkinter.messagebox.showerror("Error", "Mook Name is Required")
     else:
         if len(db.find("cpr.mooks","name", mookname_entry.get())) > 0:
             readytocommit = False
-            # error message here
-            print("name already exists")
+            tkinter.messagebox.showerror("Error", "Mook Name already Exists")
         else:
             mookid = save_mook()
             if mookid == -1:
                 readytocommit = False
-                # error message here
-                print("error saving")
+                tkinter.messagebox.showerror("Error", "Mook ID not Found")
     if readytocommit:
         save_role(mookid)
         save_stats(mookid)
