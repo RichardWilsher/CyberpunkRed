@@ -139,7 +139,8 @@ CREATE TABLE cpr.weapons (
 id int,
 name varchar(45),
 dice varchar(4),
-rof varchar(1)
+rof varchar(1),
+exotic varchar(1) 
 );
 ALTER TABLE cpr.weapons CHANGE COLUMN id id INT NOT NULL AUTO_INCREMENT , ADD PRIMARY KEY (id);
 

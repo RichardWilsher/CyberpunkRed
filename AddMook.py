@@ -22,11 +22,11 @@ stats = {
     'body': 2,
     'emp': 2
 }
-# not sure if these will be used or not
-will = 2
-body = 2
-armour_modifier = 0 
+# multiple entry arrays
+mook_weapons = []
 mook_skills = []
+mook_equipment = []
+mook_cyberwear = []
 
 def calc_hp(*arg):
     try:
@@ -91,46 +91,177 @@ def save():
     print(headtup, bodytup)
 
 def clear():
-    print("clear")
+    # clear all items
+    mooktype_combo.current(0)
+    type_combo.current(0)
+    mookname_entry.delete(0, tk.END)
+    rep_combo.current(0)
+    roleability_combo.current(0)
+    roles = db.orderedselecectedfindall("cpr.roles", "name", "name")
+    position = 0
+    for index,role in enumerate(roles):
+        string = str(role)
+        string = string.lstrip('(\')')
+        string = string.rstrip(',\')')
+        if string == "none":
+            position = index
+    role_combo.current(position)
+    location_entry.delete(0, tk.END)
+    # stats
+    int_combo.current(0)
+    ref_combo.current(0)
+    dex_combo.current(0)
+    tech_combo.current(0)
+    cool_combo.current(0)
+    will_combo.current(0)
+    luck_combo.current(0)
+    move_combo.current(0)
+    body_combo.current(0)
+    emp_combo.current(0)
+    # armour
+    headsp_combo.current(0)
+    bodysp_combo.current(0)
+    headtup_var.set(0)
+    bodytup_var.set(0)
+    # weapons
+    weapon_combo.current(0)
+    weaponquality_combo.current(0)
+    weapon_listbox.delete(0, tk.END)
+    # skills
+    skill_combo.current(0)
+    skillvalue_combo.current(0)
+    skillnotes_entry.delete(0, tk.END)
+    skills_listbox.delete(0, tk.END)
+    # equipment
+    equipment_combo.current(0)
+    equipmentquantity_combo.current(0)
+    equipmentnotes_entry.delete(0, tk.END)
+    equipment_listbox.delete(0, tk.END)
+    # cyberwear
+    cyberwear_combo.current(0)
+    cyberwearquantity_combo.current(0)
+    cyberwearnotes_entry.delete(0, tk.END)
+    cyberwear_listbox.delete(0, tk.END)
+
 
 def weaponadd():
-    print("weaponadd")
+    global mook_weapons
+    weapon = db.find("cpr.weapons","name", weapon_combo.get())
+    quality = db.find("cpr.weapon_quality","name", weaponquality_combo.get())
+    weaponentry = wc.weapon(weapon[0][1], quality[0][1], quality[0][0], weapon[0][2], weapon[0][3], weapon[0][0])
+    mook_weapons.append(weaponentry)
+    weaponname = quality[0][1] + " " + weapon[0][1]
+    weapon_listbox.insert(tk.END, weaponname)
 
 def weaponremove():
-    print("weaponremove")
+    global mook_weapons
+    selected_indices = weapon_listbox.curselection()
+    for i in selected_indices:
+        mook_weapons.pop(i)
+        weapon_listbox.delete(i)
 
 def skilladd():
     global mook_skills
     skill = db.find("cpr.skills","name", skill_combo.get())
     value = int(skillvalue_combo.get())
     notes = skillnotes_entry.get()
-    skillentry = sc.skillvalue(skill[0][1], value, notes, skill[0][0])
-    mook_skills.append(skillentry)
-    skills_listbox.insert(tk.END, skill[0][1] + " " + str(value))
+    skillentry = sc.skill(skill[0][1], value, notes, skill[0][0])
+    if notes != '':
+        skillname = skill[0][1] + " (" + notes + ") " + str(value)
+    else:
+        skillname = skill[0][1] + " " + str(value)
+    # check for duplicate entry and replace if found
+    position = -1
+    for index,skills in enumerate(mook_skills):
+        if skills.name == skillentry.name and skills.notes == skillentry.notes:
+            position = index
+    if position != -1: 
+        mook_skills[index] = skillentry
+        skills_listbox.delete(position)
+        skills_listbox.insert(position, skillname)
+    else:
+        mook_skills.append(skillentry)
+        skills_listbox.insert(tk.END, skillname)
+    skillnotes_entry.delete(0,'end')
 
 def skillremove():
-    print("skillremove")
-
-def skillupdate():
-    print("skillupdate")
+    global mook_skills
+    selected_indices = skills_listbox.curselection()
+    for i in selected_indices:
+        mook_skills.pop(i)
+        skills_listbox.delete(i)
 
 def equipmentadd():
-    print("equipmentadd")
-
+    global mook_equipment
+    equipment = db.find("cpr.equipment","name", equipment_combo.get())
+    quantity = int(equipmentquantity_combo.get())
+    notes = equipmentnotes_entry.get()
+    equipmententry = ec.equipment(equipment[0][2], quantity, notes, equipment[0][0])
+    if notes != '':
+        note = "(" + notes + ")"
+    else:
+        note = ""
+    if quantity > 1:
+        equipmentname = equipment[0][2] + " x" + str(quantity) + " " + note
+    else:
+        equipmentname = equipment[0][2] + " " + note
+    # # check for duplicate entry and replace if found
+    position = -1
+    for index,equipment in enumerate(mook_equipment):
+        if equipment.name == equipmententry.name and equipment.notes == equipmententry.notes:
+            position = index
+    if position != -1:
+        mook_equipment[index] = equipmententry
+        equipment_listbox.delete(position)
+        equipment_listbox.insert(position, equipmentname)
+    else:
+        mook_equipment.append(equipmententry)
+        equipment_listbox.insert(tk.END, equipmentname)
+    equipmentnotes_entry.delete(0,'end')
+    equipmentquantity_combo.current(0)
+    
 def equipmentremove():
-    print("equipmentremove")
-
-def equipmentupdate():
-    print("equipmentupdate")
+    global mook_equipment
+    selected_indices = equipment_listbox.curselection()
+    for i in selected_indices:
+        mook_equipment.pop(i)
+        equipment_listbox.delete(i)
 
 def cyberwearadd():
-    print("cyberwearadd")
+    global mook_cyberwear
+    cyberwear = db.find("cpr.cyberwear","name", cyberwear_combo.get())
+    quantity = int(cyberwearquantity_combo.get())
+    notes = cyberwearnotes_entry.get()
+    cyberwearentry = cc.cyberwear(cyberwear[0][2], quantity, notes, cyberwear[0][0])
+    if notes != '':
+        note = "(" + notes + ")"
+    else:
+        note = ""
+    if quantity > 1:
+        cyberwearname = cyberwear[0][2] + " x" + str(quantity) + " " + note
+    else:
+        cyberwearname = cyberwear[0][2] + " " + note
+    # check for duplicate entry and replace if found
+    position = -1
+    for index,cyberwear in enumerate(mook_cyberwear):
+        if cyberwear.name == cyberwearentry.name and cyberwear.notes == cyberwearentry.notes:
+            position = index
+    if position != -1:
+        mook_cyberwear[index] = cyberwearentry
+        cyberwear_listbox.delete(position)
+        cyberwear_listbox.insert(position, cyberwearname)
+    else:
+        mook_cyberwear.append(cyberwearentry)
+        cyberwear_listbox.insert(tk.END, cyberwearname)
+    cyberwearnotes_entry.delete(0,'end')
+    cyberwearquantity_combo.current(0)
 
 def cyberwearremove():
-    print("cyberwearremove")
-
-def cyberwearupdate():
-    print("cyberwearupdate")
+    global mook_cyberwear
+    selected_indices = cyberwear_listbox.curselection()
+    for i in selected_indices:
+        mook_cyberwear.pop(i)
+        cyberwear_listbox.delete(i)
 
 win = tk.Tk()
 w = 832
@@ -172,8 +303,8 @@ type_combo.current(0)
 type_combo.place(x=80, y=15)
 name_label = tk.Label(win, text="Name:", font=("Arial", 12), bg='#fff', fg='#000')
 name_label.place(x=10, y=55)
-mooknaname_entry = tk.Entry(win, width=20, font=("Arial", 12), bg='#fff', fg='#000')
-mooknaname_entry.place(x=80, y=55)
+mookname_entry = tk.Entry(win, width=20, font=("Arial", 12), bg='#fff', fg='#000')
+mookname_entry.place(x=80, y=55)
 rep_label = tk.Label(win, text="Rep:", font=("Arial", 12), bg='#fff', fg='#000')
 rep_label.place(x=310, y=55)
 rep_v = tk.StringVar() 
@@ -365,10 +496,10 @@ bodysp_combo.current(0)
 bodysp_combo.place(x=40, y=280)
 # tech upgrade checkboxes
 headtup_var = tk.IntVar()
-headtup_check = tk.Checkbutton(win, text="Tech Upgraded?", variable=headtup_var, onvalue=1, offvalue=0, bg='#fff', fg='#000')
+headtup_check = tk.Checkbutton(win, text="Tech Upgraded", variable=headtup_var, onvalue=1, offvalue=0, bg='#fff', fg='#000')
 headtup_check.place(x=400, y=232)
 bodytup_var = tk.IntVar()
-bodytup_check = tk.Checkbutton(win, text="Tech Upgraded?", variable=bodytup_var, onvalue=1, offvalue=0, bg='#fff', fg='#000')
+bodytup_check = tk.Checkbutton(win, text="Tech Upgraded", variable=bodytup_var, onvalue=1, offvalue=0, bg='#fff', fg='#000')
 bodytup_check.place(x=400, y=280)
 # weapon divider
 rectangle = canvas.create_rectangle(15, 320, 135, 345, fill="#a32", outline="#a32", width=3)
@@ -460,8 +591,6 @@ skillnotes_entry = tk.Entry(win, width=30, font=("Arial", 10), bg='#fff', fg='#0
 skillnotes_entry.place(x=280, y=535)
 skilladd_button = tk.Button(win, text="Add", font=("Arial", 10), bg='#a32', fg='#fff', command=skilladd)
 skilladd_button.place(x=600, y=500)
-skillupdate_button = tk.Button(win, text="Update", font=("Arial", 10), bg='#a32', fg='#fff', command=skillupdate)
-skillupdate_button.place(x=725, y=500)
 skillremove_button = tk.Button(win, text="Remove", font=("Arial", 10), bg='#a32', fg='#fff', command=skillremove)
 skillremove_button.place(x=650, y=500)
 # equipment divider
@@ -511,8 +640,6 @@ equipmentnotes_entry = tk.Entry(win, width=30, font=("Arial", 10), bg='#fff', fg
 equipmentnotes_entry.place(x=280, y=710)
 equipmentadd_button = tk.Button(win, text="Add", font=("Arial", 10), bg='#a32', fg='#fff', command=equipmentadd)
 equipmentadd_button.place(x=600, y=680)
-equipmentupdate_button = tk.Button(win, text="Update", font=("Arial", 10), bg='#a32', fg='#fff', command=equipmentupdate)
-equipmentupdate_button.place(x=725, y=680)
 equipmentremove_button = tk.Button(win, text="Remove", font=("Arial", 10), bg='#a32', fg='#fff', command=equipmentremove)
 equipmentremove_button.place(x=650, y=680)
 # Cyberwear divider
@@ -524,17 +651,13 @@ canvas.create_line(15, 762, 818, 762, fill="#000", width=2)
 cyberlabel = tk.Label(win, text="CYBERWEAR", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
 cyberlabel.place(x=15, y=732)
 # Cyberwear
-cyberwear = db.orderedselecectedfindall("cpr.cyberwear", "name", "name")
-display_cyberwear = []
-for cyber in cyberwear:
-    display_cyberwear.append(cyber[0])
-equipment_list_items =tk.Variable()
-equipment_listbox = tk.Listbox(win, listvariable=equipment_list_items, height=4, width=20, font=("Arial", 12), bg='#fff', fg='#000')
-equipment_listbox.place(x=10, y=770)
-equipment_scrollbar = ttk.Scrollbar(win, orient="vertical", command=equipment_listbox.yview)
-equipment_listbox.configure(yscrollcommand=equipment_scrollbar.set)
-equipment_scrollbar.pack(side="right", fill="y")
-equipment_scrollbar.place(x=192, y=770, height=79)
+cyberwear_list_items =tk.Variable()
+cyberwear_listbox = tk.Listbox(win, listvariable=cyberwear_list_items, height=4, width=20, font=("Arial", 12), bg='#fff', fg='#000')
+cyberwear_listbox.place(x=10, y=770)
+cyberwear_scrollbar = ttk.Scrollbar(win, orient="vertical", command=cyberwear_listbox.yview)
+cyberwear_listbox.configure(yscrollcommand=cyberwear_scrollbar.set)
+cyberwear_scrollbar.pack(side="right", fill="y")
+cyberwear_scrollbar.place(x=192, y=770, height=79)
 # Cyberwear combo
 cyberwear = db.orderedselecectedfindall("cpr.cyberwear", "name", "name")
 cyberwear_names = []
@@ -562,8 +685,6 @@ cyberwearnotes_entry = tk.Entry(win, width=30, font=("Arial", 10), bg='#fff', fg
 cyberwearnotes_entry.place(x=280, y=830)
 cyberwearadd_button = tk.Button(win, text="Add", font=("Arial", 10), bg='#a32', fg='#fff', command=cyberwearadd)
 cyberwearadd_button.place(x=600, y=800)
-cyberwearupdate_button = tk.Button(win, text="Update", font=("Arial", 10), bg='#a32', fg='#fff', command=cyberwearupdate)
-cyberwearupdate_button.place(x=725, y=800)
 cyberwearremove_button = tk.Button(win, text="Remove", font=("Arial", 10), bg='#a32', fg='#fff', command=cyberwearremove)
 cyberwearremove_button.place(x=650, y=800)
 # buttons

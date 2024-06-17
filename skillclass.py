@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class skillvalue:
+class skill:
     name: str
     value: int
     notes: str
