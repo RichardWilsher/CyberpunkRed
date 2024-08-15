@@ -10,6 +10,7 @@ import cyberwearclass as cc
 import tkinter.messagebox
 
 # TODO add Entry for Tech/Medtech specialisations
+# TODO multi Role Support
 # TODO UI Tidyup
 
 db = databaseTools.databaseTools()
@@ -19,6 +20,11 @@ mook_weapons = []
 mook_skills = []
 mook_equipment = []
 mook_cyberwear = []
+
+
+def sort(mook_skills):
+    mook_skills.sort(key=lambda x: x.name)
+    return mook_skills
 
 def calc_hp(*arg):
     try:
@@ -71,13 +77,21 @@ def change_armour(*arg):
     bodysp_label.config(text=bodysp)
 
 def clear():
+    global mook_weapons
+    global mook_skills
+    global mook_equipment
+    global mook_cyberwear
+    mook_weapons.clear()
+    mook_skills.clear()
+    mook_equipment.clear()
+    mook_cyberwear.clear()
     # clear all items
     mooktype_combo.current(0)
     type_combo.current(0)
     mookname_entry.delete(0, tk.END)
     rep_combo.current(0)
     roleability_combo.current(0)
-    roles = db.orderedselecectedfindall("cpr.roles", "name", "name")
+    roles = db.orderedselectedfindall("cpr.roles", "name", "name")
     position = 0
     for index,role in enumerate(roles):
         string = str(role)
@@ -112,6 +126,63 @@ def clear():
     skillvalue_combo.current(0)
     skillnotes_entry.delete(0, tk.END)
     skills_listbox.delete(0, tk.END)
+    # add universal skills
+    skillname = "Athletics"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 6))
+    skillname = "Brawling"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 32))
+    skillname = "Concentration"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 1))
+    skillname = "Conversation"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 44))
+    skillname = "Education"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 24))
+    skillname = "Evasion"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 33))
+    skillname = "First Aid"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 57))
+    skillname = "Human Perception"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 45))
+    skillname = "Language"
+    skilllevel = "6"
+    skills_listbox.insert(tk.END, skillname + " (Native) " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 6, "Native", 26))
+    skillname = "Language"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " (Streetslang) " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "Streetslang", 26))
+    skillname = "Local Expert"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " (Your Home) " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "Your Home", 28))
+    skillname = "Perception"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 4))
+    skillname = "Persuasion"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 47))
+    skillname = "Stealth"
+    skilllevel = "4"
+    skills_listbox.insert(tk.END, skillname + " " + skilllevel)
+    mook_skills.append(sc.skill(skillname, 4, "", 11))
     # equipment
     equipment_combo.current(0)
     equipmentquantity_combo.current(0)
@@ -123,14 +194,6 @@ def clear():
     cyberwearnotes_entry.delete(0, tk.END)
     cyberwear_listbox.delete(0, tk.END)
     # clear arrays
-    global mook_weapons
-    global mook_skills
-    global mook_equipment
-    global mook_cyberwear
-    mook_weapons.clear()
-    mook_skills.clear()
-    mook_equipment.clear()
-    mook_cyberwear.clear()
 
 def save_mook():
     name = mookname_entry.get()
@@ -181,6 +244,7 @@ def save_weapons(mookid):
         db.insert("cpr.mook_weapon", ["mookid", "weaponid", "qualityid"], [mookid, weapon.id, qualityid], ["int", "int", "int"])
 
 def save_skills(mookid):
+    sort(mook_skills)
     for skill in mook_skills:
         value = skill.value
         notes = skill.notes
@@ -407,7 +471,7 @@ role_label.place(x=10, y=82)
 role_v = tk.StringVar()
 role_v.trace_add('write', changerole)
 role_combo = ttk.Combobox(win, width = 10, textvariable = role_v)
-roles = db.orderedselecectedfindall("cpr.roles", "name", "name")
+roles = db.orderedselectedfindall("cpr.roles", "name", "name")
 role_combo['values'] = roles
 role_combo['state'] = 'readonly'
 position = 0
@@ -646,7 +710,7 @@ skills_listbox.configure(yscrollcommand=skills_scrollbar.set)
 skills_scrollbar.pack(side="right", fill="y")
 skills_scrollbar.place(x=192, y=460, height=155)
 # Skills combo
-skills = db.orderedselecectedfindall("cpr.skills","name","name")
+skills = db.orderedselectedfindall("cpr.skills","name","name")
 skill_names = []
 for skill in skills:
     skill_names.append(skill[0])
@@ -683,7 +747,7 @@ canvas.create_line(15, 647, 818, 647, fill="#000", width=2)
 equiplabel = tk.Label(win, text="EQUIPMENT", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
 equiplabel.place(x=15, y=620)
 # equipment
-equipment = db.orderedselecectedfindall("cpr.equipment", "name", "name")   
+equipment = db.orderedselectedfindall("cpr.equipment", "name", "name")   
 display_equipment = []
 for equip in equipment:
     display_equipment.append(equip[0])
@@ -695,7 +759,7 @@ equipment_listbox.configure(yscrollcommand=equipment_scrollbar.set)
 equipment_scrollbar.pack(side="right", fill="y")
 equipment_scrollbar.place(x=192, y=650, height=79)
 # equipment combo
-equipment = db.orderedselecectedfindall("cpr.equipment", "name", "name")
+equipment = db.orderedselectedfind("cpr.equipment", "name", "display", "y", "name")
 equipment_names = []
 for equip in equipment:
     equipment_names.append(equip[0])
@@ -743,7 +807,7 @@ cyberwear_listbox.configure(yscrollcommand=cyberwear_scrollbar.set)
 cyberwear_scrollbar.pack(side="right", fill="y")
 cyberwear_scrollbar.place(x=192, y=770, height=79)
 # Cyberwear combo
-cyberwear = db.orderedselecectedfindall("cpr.cyberwear", "name", "name")
+cyberwear = db.orderedselectedfindall("cpr.cyberwear", "name", "name")
 cyberwear_names = []
 for cyber in cyberwear:
     cyberwear_names.append(cyber[0])
@@ -776,5 +840,7 @@ save_button = tk.Button(win, text="SAVE", font=("Arial", 12, "bold"), bg='#a32',
 save_button.place(x=10, y=855)
 clear_button = tk.Button(win, text="CLEAR", font=("Arial", 12, "bold"), bg='#a32', fg='#fff', command=clear)
 clear_button.place(x=100, y=855)
+
+clear()
 
 win.mainloop()

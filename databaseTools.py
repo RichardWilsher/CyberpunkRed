@@ -40,9 +40,15 @@ class databaseTools:
         result = cursor.fetchall()
         return result
     
-    def orderedselecectedfindall(self, tablename, columns, order):
+    def orderedselectedfindall(self, tablename, columns, order):
         global cursor
         cursor.execute("SELECT " + columns + " FROM " + tablename + " ORDER BY " + order + ";")
+        result = cursor.fetchall()
+        return result
+    
+    def orderedselectedfind(self, tablename, columns, coulmnname, value, order):
+        global cursor
+        cursor.execute("SELECT " + columns + " FROM " + tablename + " WHERE " + coulmnname + " = '" + value + "' ORDER BY " + order + ";")
         result = cursor.fetchall()
         return result
 

@@ -75,6 +75,8 @@ initativelist = []
 win = tk.Tk()
 win.geometry("500x220")
 win.title("Cyberpunk Initative Tracker")
+canvas = tk.Canvas(win, width=500, height=220, bg="white")
+canvas.pack()
 
 #setup the listbox and scrollbar
 listbox = tk.Listbox(win, height = 10,  bg = "white", fg = "black", selectmode = "SINGLE")
@@ -93,7 +95,7 @@ initative_label.place(x=240, y=55)
 initative_textbox = tk.Entry(win, font=("Arial", 12), bg='#fff', fg='#000')
 initative_textbox.place(x=305, y=55)
 # setup the buttons
-add_button = tk.Button(win, text="Add", font=("Arial", 12), bg='#fff', fg='#000', command=lambda: addinitiativevalue(initativelist, int(initative_textbox.get()), str(name_textbox.get())))
+add_button = tk.Button(win, text="Add", font=("Arial", 12), bg='#a32', fg='#fff', command=lambda: addinitiativevalue(initativelist, int(initative_textbox.get()), str(name_textbox.get())))
 add_button.place(x=240, y=85)
 # pack components
 listbox.pack()
