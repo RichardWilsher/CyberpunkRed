@@ -455,9 +455,10 @@ mooks = []
 mooktable = dbt.find("cpr.mooks", "type", "1")
 # mooktable = dbt.findall("cpr.mooks")
 
-for index,entry in enumerate(mooktable):
-    mooks.append(loadmooks(index+1))
-
+# for index,entry in enumerate(mooktable):
+#     mooks.append(loadmooks(index+1))
+for i in range(len(mooktable)):
+    mooks.append(loadmooks(i+1))
 # weapon combobox
 w = tk.StringVar() 
 mookweaponchoosen = ttk.Combobox(win, width = 27, textvariable = w) 

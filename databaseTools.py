@@ -6,7 +6,7 @@ cursor = None
 
 class databaseTools:
     def __init__(self):
-        with open('dbsettings.json') as json_file:
+        with open('E:\\Settings\\dbsettings.json') as json_file:
             dbsettings = json.load(json_file)
             global connection
             connection = mysql.connector.connect(
@@ -24,55 +24,57 @@ class databaseTools:
 
     def findall(self, tableName):
         global cursor
-        cursor.execute("SELECT * FROM " + tableName +";")
+        cursor.execute(f"SELECT * FROM {tableName};")
         result = cursor.fetchall()
         return result
     
     def orderedfindall(self, tableName, order):
         global cursor
-        cursor.execute("SELECT * FROM " + tableName +"OREDR BY " + order + ";")
+        cursor.execute(f"SELECT * FROM {tableName} ORDER BY {order};")
         result = cursor.fetchall()
         return result
     
     def selectedfindall(self, tablename, columns):
         global cursor
-        cursor.execute("SELECT " + columns + " FROM " + tablename + ";")
+        cursor.execute(f"SELECT {columns} FROM {tablename};")
         result = cursor.fetchall()
         return result
     
-    def orderedselectedfindall(self, tablename, columns, order):
+    def orderedselecectedfindall(self, tablename, columns, order):
         global cursor
-        cursor.execute("SELECT " + columns + " FROM " + tablename + " ORDER BY " + order + ";")
-        result = cursor.fetchall()
-        return result
-    
-    def orderedselectedfind(self, tablename, columns, coulmnname, value, order):
-        global cursor
-        cursor.execute("SELECT " + columns + " FROM " + tablename + " WHERE " + coulmnname + " = '" + value + "' ORDER BY " + order + ";")
+        cursor.execute(f"SELECT {columns} FROM {tablename} ORDER BY {order};")
         result = cursor.fetchall()
         return result
 
     def find(self, tableName, columnName, value):
         global cursor
-        cursor.execute("SELECT * FROM " + tableName + " WHERE " + columnName + " = '" + value + "';")
+        cursor.execute(f"SELECT * FROM {tableName} WHERE {columnName} = '{value}';")
         result = cursor.fetchall()
         return result
     
     def orderedfind(self, tableName, columnName, value, order):
         global cursor
-        cursor.execute("SELECT * FROM " + tableName + " WHERE " + columnName + " = '" + value + "'ORDER BY " + order + ";")
+        cursor.execute(f"SELECT * FROM {tableName} WHERE {columnName} = '{value}' ORDER BY {order};")
+        result = cursor.fetchall()
+        return result
+    
+    def fuzzyfind(self, tableName, value, columnName):
+        global cursor
+        columnName = columnName.upper()
+        value = value.upper().replace("\n", "") 
+        cursor.execute(f"SELECT * FROM {tableName} WHERE UPPER({columnName}) LIKE UPPER('%{value}%');")
         result = cursor.fetchall()
         return result
     
     def describe(self, tableName):
         global cursor
-        cursor.execute("DESCRIBE " + tableName)
+        cursor.execute(f"DESCRIBE {tableName};")
         result = cursor.fetchall()
         return result
     
     def getprimarykey(self, tableName):
         global cursor
-        cursor.execute("SHOW KEYS FROM " + tableName + " WHERE Key_name = 'PRIMARY';")
+        cursor.execute(f"SHOW KEYS FROM {tableName} WHERE Key_name = 'PRIMARY';")
         result = cursor.fetchall()
         return result
     
@@ -80,37 +82,37 @@ class databaseTools:
         global cursor
         global connection
         columns = ''
-        value = ''
+        values = ''
         for index,columnName in enumerate(columnNames):
             columns += (str(columnName))
             if(index != len(columnNames) - 1):
                 columns += (', ')
         for index,columnValue in enumerate(columnValues):
             if (types[index] == "string"):
-                value += ('"' + str(columnValue))
+                values += ('"' + str(columnValue))
             else:
-                value += ('\'' + str(columnValue))
+                values += ('\'' + str(columnValue))
             if(index != len(columnValues) - 1):
                 if (types[index] == "string"):
-                    value += ('", ')
+                    values += ('", ')
                 else:
-                    value += ('\', ')
+                    values += ('\', ')
             else:
                 if (types[index] == "string"):
-                    value += ('"')
+                    values += ('"')
                 else:
-                    value += ('\'')
-        cursor.execute("INSERT INTO " + tableName + " (" + columns + ") VALUES (" + value + ");")
+                    values += ('\'')
+        cursor.execute(f"INSERT INTO {tableName} ({columns}) VALUES ({values});")
         connection.commit()
 
     def delete(self, tableName, columnName, value):
         global cursor
-        cursor.execute("DELETE FROM " + tableName + " WHERE " + columnName + " = '" + value + "';")
+        cursor.execute(f"DELETE FROM {tableName} WHERE {columnName} = '{value}';")
         connection.commit()
 
     def update(self, tableName, columnName, value, columnName2, value2):
         global cursor
-        cursor.execute("UPDATE " + tableName + " SET " + columnName + " = '" + value + "' WHERE " + columnName2 + " = '" + value2 + "';")
+        cursor.execute(f"UPDATE {tableName} SET {columnName} = '{value}' WHERE {columnName2} = '{value2}';")
         connection.commit()    
 
     def getSchemas(self):

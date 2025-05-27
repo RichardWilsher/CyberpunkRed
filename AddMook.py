@@ -1,13 +1,12 @@
 import databaseTools
 import mook
 import tkinter as tk
-from tkinter import ttk 
+from tkinter import END, ttk, messagebox 
 import math
 import skillclass as sc
 import weaponclass as wc
 import equipmentclass as ec
 import cyberwearclass as cc
-import tkinter.messagebox
 
 # TODO add Entry for Tech/Medtech specialisations
 # TODO multi Role Support
@@ -20,6 +19,25 @@ mook_weapons = []
 mook_skills = []
 mook_equipment = []
 mook_cyberwear = []
+
+MOOKDB = "cpr.mook"
+MOOKTYPEDB = "cpr.mook_type"
+MOOKROLEDB = "cpr.mook_role"
+ROLEDB = "cpr.roles"
+TYPEDB = "cpr.type"
+WEAPONDB = "cpr.weapons"
+SKILLDB = "cpr.skills"
+EQUIPMENTDB = "cpr.equipment"
+CYBERWEARDB = "cpr.cyberwear"
+ARMOURDB = "cpr.armour"
+WEAPONQUALITYDB = "cpr.weapon_quality"
+MOOKSTATDB = "cpr.mook_stat"
+MOOKHEADARMOURDB = "cpr.mook_head_armour"
+MOOKBODYARMOURDB = "cpr.mook_body_armour"
+MOOKWEAPONDB = "cpr.mook_weapon"
+MOOKSKILLDB = "cpr.mook_skill"
+MOOKEQUIPMENTDB = "cpr.mook_equipment"
+MOOKCYBERWEARDB = "cpr.mook_cyberwear"
 
 
 def sort(mook_skills):
@@ -49,7 +67,7 @@ def changerole(*arg):
     else:
         roleability_combo.place(x=455, y=82)
         roleability_label.place(x=310, y=82)
-        roleabilityname = db.find("cpr.roles","name", role_combo.get())
+        roleabilityname = db.find(ROLEDB,"name", role_combo.get())
         roleability_label.config(text=roleabilityname[0][1] +":")
         
 def change_type(*arg):
@@ -64,13 +82,13 @@ def change_armour(*arg):
     global headsp_label
     global bodysp_label
     try: 
-        armour_value = db.find("cpr.armour","name", headsp_combo.get())
+        armour_value = db.find(ARMOURDB,"name", headsp_combo.get())
         headsp = armour_value[0][2]
     except Exception:
         headsp = 4
     headsp_label.config(text=headsp)
     try:
-        armour_value = db.find("cpr.armour","name", bodysp_combo.get())
+        armour_value = db.find(ARMOURDB,"name", bodysp_combo.get())
         bodysp = armour_value[0][2]
     except Exception:
         bodysp = 4
@@ -91,7 +109,7 @@ def clear():
     mookname_entry.delete(0, tk.END)
     rep_combo.current(0)
     roleability_combo.current(0)
-    roles = db.orderedselectedfindall("cpr.roles", "name", "name")
+    roles = db.orderedselectedfindall(ROLEDB, "name", "name")
     position = 0
     for index,role in enumerate(roles):
         string = str(role)
@@ -198,34 +216,34 @@ def clear():
 def save_mook():
     name = mookname_entry.get()
     temp_type = type_combo.get()
-    mtype = db.find("cpr.type","name", temp_type)[0][0]
+    mtype = db.find(TYPEDB,"name", temp_type)[0][0]
     tempmook_type = mooktype_combo.get()
-    mook_type = db.find("cpr.mook_type","name", tempmook_type)[0][0]
+    mook_type = db.find(MOOKTYPEDB,"name", tempmook_type)[0][0]
     locatiom = location_entry.get()
     rep = rep_combo.get()
-    db.insert("cpr.mooks", ["name", "mook_type", "type", "location", "rep"], [name, mook_type, mtype, locatiom, rep], ["string", "int", "int", "string", "int"])
-    mookid = db.find("cpr.mooks","name", name)[0][0]
+    db.insert(MOOKDB, ["name", "mook_type", "type", "location", "rep"], [name, mook_type, mtype, locatiom, rep], ["string", "int", "int", "string", "int"])
+    mookid = db.find(MOOKDB,"name", name)[0][0]
     return mookid
 
 def save_role(mookid):
     role = role_combo.get()
-    roleid = db.find("cpr.roles","name", role)[0][0]
+    roleid = db.find(ROLEDB,"name", role)[0][0]
     value = roleability_combo.get()
     if role == 'none':
-        db.insert("cpr.mook_role", ["mookid", "roleid"], [mookid, roleid], ["int", "int"])
+        db.insert(MOOKROLEDB, ["mookid", "roleid"], [mookid, roleid], ["int", "int"])
     else:
-        db.insert("cpr.mook_role", ["mookid", "roleid", "value"], [mookid, roleid, value], ["int", "int", "int"])
+        db.insert(MOOKROLEDB, ["mookid", "roleid", "value"], [mookid, roleid, value], ["int", "int", "int"])
 
 def save_stats(mookid):
     stats = [int_combo.get(), ref_combo.get(), dex_combo.get(), tech_combo.get(), cool_combo.get(), will_combo.get(), luck_combo.get(), move_combo.get(), body_combo.get(), emp_combo.get()]
     for index,stat in enumerate(stats):
-        db.insert("cpr.mook_stat", ["mookid", "statid", "value"], [mookid, index+1, stat], ["int", "int", "string"])
+        db.insert(MOOKSTATDB, ["mookid", "statid", "value"], [mookid, index+1, stat], ["int", "int", "string"])
 
 def save_armour(mookid):
     headsp = headsp_combo.get()
-    headid = db.find("cpr.armour","name", headsp)[0][0]
+    headid = db.find(ARMOURDB,"name", headsp)[0][0]
     bodysp = bodysp_combo.get()
-    bodyid = db.find("cpr.armour","name", bodysp)[0][0]
+    bodyid = db.find(ARMOURDB,"name", bodysp)[0][0]
     if headtup_var.get() == 1:
         headtup = 'y'
     else:
@@ -234,27 +252,27 @@ def save_armour(mookid):
         bodytup = 'y'
     else:
         bodytup = 'n'
-    db.insert("cpr.mook_head_armour", ["mookid", "armourid", "techupgraded"], [mookid, headid, headtup], ["int", "int", "string"])
-    db.insert("cpr.mook_body_armour", ["mookid", "armourid", "techupgraded"], [mookid, bodyid, bodytup], ["int", "int", "string"])
+    db.insert(MOOKHEADARMOURDB, ["mookid", "armourid", "techupgraded"], [mookid, headid, headtup], ["int", "int", "string"])
+    db.insert(MOOKBODYARMOURDB, ["mookid", "armourid", "techupgraded"], [mookid, bodyid, bodytup], ["int", "int", "string"])
 
 def save_weapons(mookid):
     for weapon in mook_weapons:
         quality = weapon.quality
-        qualityid = db.find("cpr.weapon_quality","name", quality)[0][0]
-        db.insert("cpr.mook_weapon", ["mookid", "weaponid", "qualityid"], [mookid, weapon.id, qualityid], ["int", "int", "int"])
+        qualityid = db.find(WEAPONQUALITYDB,"name", quality)[0][0]
+        db.insert(MOOKWEAPONDB, ["mookid", "weaponid", "qualityid"], [mookid, weapon.id, qualityid], ["int", "int", "int"])
 
 def save_skills(mookid):
     sort(mook_skills)
     for skill in mook_skills:
         value = skill.value
         notes = skill.notes
-        db.insert("cpr.mook_skill", ["mookid", "skillid", "value", "notes"], [mookid, skill.id, value, notes], ["int", "int", "string", "string"])
+        db.insert(MOOKSKILLDB, ["mookid", "skillid", "value", "notes"], [mookid, skill.id, value, notes], ["int", "int", "string", "string"])
 
 def save_equipment(mookid):
     for equipment in mook_equipment:
         quantity = equipment.quantity
         notes = equipment.notes
-        db.insert("cpr.mook_equipment", ["mookid", "equipmentid", "quantity", "notes"], [mookid, equipment.id, quantity, notes], ["int", "int", "string", "string"])
+        db.insert(MOOKEQUIPMENTDB, ["mookid", "equipmentid", "quantity", "notes"], [mookid, equipment.id, quantity, notes], ["int", "int", "string", "string"])
         
 
 def save_cyberwear(mookid):
@@ -262,23 +280,23 @@ def save_cyberwear(mookid):
         cyberwearid = cyberwear.id
         quantity = cyberwear.quantity
         notes = cyberwear.notes
-        db.insert("cpr.mook_cyberwear", ["mookid", "cyberwearid", "quantity", "notes"], [mookid, cyberwearid, quantity, notes], ["int", "int", "string", "string"])  
+        db.insert(MOOKCYBERWEARDB, ["mookid", "cyberwearid", "quantity", "notes"], [mookid, cyberwearid, quantity, notes], ["int", "int", "string", "string"])  
 
 def save():
     readytocommit = True
     mookid = -1
     if mookname_entry.get() == '':
         readytocommit = False
-        tkinter.messagebox.showerror("Error", "Mook Name is Required")
+        messagebox.showerror("Error", "Mook Name is Required")
     else:
-        if len(db.find("cpr.mooks","name", mookname_entry.get())) > 0:
+        if len(db.find(MOOKDB,"name", mookname_entry.get())) > 0:
             readytocommit = False
-            tkinter.messagebox.showerror("Error", "Mook Name already Exists")
+            messagebox.showerror("Error", "Mook Name already Exists")
         else:
             mookid = save_mook()
             if mookid == -1:
                 readytocommit = False
-                tkinter.messagebox.showerror("Error", "Mook ID not Found")
+                messagebox.showerror("Error", "Mook ID not Found")
     if readytocommit:
         save_role(mookid)
         save_stats(mookid)
@@ -291,8 +309,8 @@ def save():
 
 def weaponadd():
     global mook_weapons
-    weapon = db.find("cpr.weapons","name", weapon_combo.get())
-    quality = db.find("cpr.weapon_quality","name", weaponquality_combo.get())
+    weapon = db.find(WEAPONDB,"name", weapon_combo.get())
+    quality = db.find(WEAPONQUALITYDB,"name", weaponquality_combo.get())
     weaponentry = wc.weapon(weapon[0][1], quality[0][1], quality[0][0], weapon[0][2], weapon[0][3], weapon[0][0])
     mook_weapons.append(weaponentry)
     weaponname = quality[0][1] + " " + weapon[0][1]
@@ -306,28 +324,31 @@ def weaponremove():
         weapon_listbox.delete(i)
 
 def skilladd():
-    global mook_skills
-    skill = db.find("cpr.skills","name", skill_combo.get())
-    value = int(skillvalue_combo.get())
-    notes = skillnotes_entry.get()
-    skillentry = sc.skill(skill[0][1], value, notes, skill[0][0])
-    if notes != '':
-        skillname = skill[0][1] + " (" + notes + ") " + str(value)
+    skill = skill_combo.get().strip()
+    try:
+        value = int(skill_value.get())
+    except ValueError:
+        messagebox.showerror("Invalid Value", "Skill value must be a number.")
+        return
+
+    # Normalize the skill name for comparison
+    normalized_skill = skill.lower()
+
+    # Check for existing skill to update
+    for i, (existing_skill, _) in enumerate(mook_skills):
+        if existing_skill.lower() == normalized_skill:
+            mook_skills[i] = (skill, value)  # preserve casing from input
+            skills_listbox.delete(i)
+            skills_listbox.insert(i, f"{skill} {value}")
+            break
     else:
-        skillname = skill[0][1] + " " + str(value)
-    # check for duplicate entry and replace if found
-    position = -1
-    for index,skills in enumerate(mook_skills):
-        if skills.name == skillentry.name and skills.notes == skillentry.notes:
-            position = index
-    if position != -1: 
-        mook_skills[index] = skillentry
-        skills_listbox.delete(position)
-        skills_listbox.insert(position, skillname)
-    else:
-        mook_skills.append(skillentry)
-        skills_listbox.insert(tk.END, skillname)
-    skillnotes_entry.delete(0,'end')
+        # Skill not found, so append
+        mook_skills.append((skill, value))
+        skills_listbox.insert(END, f"{skill} {value}")
+
+    # Reset input fields
+    skill_combo.set("")
+    skill_value.delete(0, END)
 
 def skillremove():
     global mook_skills
@@ -338,7 +359,7 @@ def skillremove():
 
 def equipmentadd():
     global mook_equipment
-    equipment = db.find("cpr.equipment","name", equipment_combo.get())
+    equipment = db.find(EQUIPMENTDB,"name", equipment_combo.get())
     quantity = int(equipmentquantity_combo.get())
     notes = equipmentnotes_entry.get()
     equipmententry = ec.equipment(equipment[0][2], quantity, notes, equipment[0][0])
@@ -374,7 +395,7 @@ def equipmentremove():
 
 def cyberwearadd():
     global mook_cyberwear
-    cyberwear = db.find("cpr.cyberwear","name", cyberwear_combo.get())
+    cyberwear = db.find(CYBERWEARDB,"name", cyberwear_combo.get())
     quantity = int(cyberwearquantity_combo.get())
     notes = cyberwearnotes_entry.get()
     cyberwearentry = cc.cyberwear(cyberwear[0][2], quantity, notes, cyberwear[0][0])
@@ -426,7 +447,7 @@ canvas.pack()
 
 mooktype_v = tk.StringVar()
 mooktype_combo = ttk.Combobox(win, width = 20, textvariable = mooktype_v)
-mooktype = db.selectedfindall("cpr.mook_type", "name")
+mooktype = db.selectedfindall(MOOKTYPEDB, "name")
 mooktypes = []
 for mook in mooktype:
     mooktypes.append(mook[0])
@@ -441,7 +462,7 @@ type_label.place(x=10, y=15)
 type_v = tk.StringVar()
 type_v.trace_add('write', change_type)
 type_combo = ttk.Combobox(win, width = 5, textvariable = type_v)
-mastertype = db.selectedfindall("cpr.type", "name")
+mastertype = db.selectedfindall(TYPEDB, "name")
 type_combo['values'] = mastertype
 type_combo['state'] = 'readonly'
 type_combo.current(0)
@@ -471,7 +492,7 @@ role_label.place(x=10, y=82)
 role_v = tk.StringVar()
 role_v.trace_add('write', changerole)
 role_combo = ttk.Combobox(win, width = 10, textvariable = role_v)
-roles = db.orderedselectedfindall("cpr.roles", "name", "name")
+roles = db.orderedselectedfindall(ROLEDB, "name", "name")
 role_combo['values'] = roles
 role_combo['state'] = 'readonly'
 position = 0
@@ -621,7 +642,7 @@ headsp_label.place(x=335, y=232)
 bodysp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
 bodysp_label.place(x=335, y=280)
 # armour combo boxes
-armours = db.selectedfindall("cpr.armour","name")
+armours = db.selectedfindall(ARMOURDB,"name")
 armour_names = []
 for armour in armours:
     armour_names.append(armour[0]) 
@@ -655,8 +676,8 @@ canvas.create_line(15, 347, 818, 347, fill="#000", width=2)
 weapon_label = tk.Label(win, text="WEAPONS", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
 weapon_label.place(x=15, y=320)
 # weapon controls
-weapons = db.selectedfindall("cpr.weapons","name")
-qualities = db.selectedfindall("cpr.weapon_quality","name")
+weapons = db.selectedfindall(WEAPONDB,"name")
+qualities = db.selectedfindall(WEAPONQUALITYDB,"name")
 weapon_list = []
 for weapon in weapons:
     weapon_list.append(weapon[0])
@@ -667,7 +688,7 @@ weapon_listbox['yscrollcommand'] = weapon_scrollbar.set
 weapon_scrollbar.pack(side="right", fill="y")
 weapon_scrollbar.place(x=192, y=360, height=61)
 # Weapon Combos
-weapon_quality = db.selectedfindall("cpr.weapon_quality","name")
+weapon_quality = db.selectedfindall(WEAPONQUALITYDB,"name")
 weaponquality_value = tk.StringVar()
 weaponquality_combo = ttk.Combobox(win, width = 20, textvariable = weaponquality_value)
 weaponquality_combo['values'] = weapon_quality
@@ -676,7 +697,7 @@ weaponquality_combo.current(0)
 weaponquality_combo.place(x=230, y=380)
 weaponquality_label = tk.Label(win, text="Weapon Quality", font=("Arial", 10), bg='#fff', fg='#000')
 weaponquality_label.place(x=230, y=355)
-weapons = db.selectedfindall("cpr.weapons","name")
+weapons = db.selectedfindall(WEAPONDB,"name")
 weapon_names = []
 for weapon in weapons:
     weapon_names.append(weapon[0])
@@ -710,7 +731,7 @@ skills_listbox.configure(yscrollcommand=skills_scrollbar.set)
 skills_scrollbar.pack(side="right", fill="y")
 skills_scrollbar.place(x=192, y=460, height=155)
 # Skills combo
-skills = db.orderedselectedfindall("cpr.skills","name","name")
+skills = db.orderedselectedfindall(SKILLDB,"name","name")
 skill_names = []
 for skill in skills:
     skill_names.append(skill[0])
@@ -747,7 +768,7 @@ canvas.create_line(15, 647, 818, 647, fill="#000", width=2)
 equiplabel = tk.Label(win, text="EQUIPMENT", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
 equiplabel.place(x=15, y=620)
 # equipment
-equipment = db.orderedselectedfindall("cpr.equipment", "name", "name")   
+equipment = db.orderedselectedfindall(EQUIPMENTDB, "name", "name")   
 display_equipment = []
 for equip in equipment:
     display_equipment.append(equip[0])
@@ -759,7 +780,7 @@ equipment_listbox.configure(yscrollcommand=equipment_scrollbar.set)
 equipment_scrollbar.pack(side="right", fill="y")
 equipment_scrollbar.place(x=192, y=650, height=79)
 # equipment combo
-equipment = db.orderedselectedfind("cpr.equipment", "name", "display", "y", "name")
+equipment = db.orderedselectedfind(EQUIPMENTDB, "name", "display", "y", "name")
 equipment_names = []
 for equip in equipment:
     equipment_names.append(equip[0])
@@ -807,7 +828,7 @@ cyberwear_listbox.configure(yscrollcommand=cyberwear_scrollbar.set)
 cyberwear_scrollbar.pack(side="right", fill="y")
 cyberwear_scrollbar.place(x=192, y=770, height=79)
 # Cyberwear combo
-cyberwear = db.orderedselectedfindall("cpr.cyberwear", "name", "name")
+cyberwear = db.orderedselectedfindall(CYBERWEARDB, "name", "name")
 cyberwear_names = []
 for cyber in cyberwear:
     cyberwear_names.append(cyber[0])
