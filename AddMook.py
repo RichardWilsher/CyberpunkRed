@@ -20,7 +20,7 @@ mook_skills = []
 mook_equipment = []
 mook_cyberwear = []
 
-MOOKDB = "cpr.mook"
+MOOKDB = "cpr.mooks"
 MOOKTYPEDB = "cpr.mook_type"
 MOOKROLEDB = "cpr.mook_role"
 ROLEDB = "cpr.roles"

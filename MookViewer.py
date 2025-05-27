@@ -9,20 +9,40 @@ import math
 # TODO add type combo box for type (mook, NPC, PC)
 # TODO potential add combo box for mook type (mook, hardened mook, etc)
 
+MOOKDB = "cpr.mooks"
+MOOKTYPEDB = "cpr.mook_type"
+MOOKROLEDB = "cpr.mook_role"
+ROLEDB = "cpr.roles"
+TYPEDB = "cpr.type"
+WEAPONDB = "cpr.weapons"
+SKILLDB = "cpr.skills"
+EQUIPMENTDB = "cpr.equipment"
+CYBERWEARDB = "cpr.cyberwear"
+ARMOURDB = "cpr.armour"
+WEAPONQUALITYDB = "cpr.weapon_quality"
+MOOKSTATDB = "cpr.mook_stat"
+MOOKHEADARMOURDB = "cpr.mook_head_armour"
+MOOKBODYARMOURDB = "cpr.mook_body_armour"
+MOOKWEAPONDB = "cpr.mook_weapon"
+MOOKSKILLDB = "cpr.mook_skill"
+MOOKEQUIPMENTDB = "cpr.mook_equipment"
+MOOKCYBERWEARDB = "cpr.mook_cyberwear"
+STATSDB = "cpr.stats"
+
 weaponlist = []
 
 def loadbasemook(id, newmook):
     # complexity 20/15
-    mookentry = dbt.find("cpr.mooks", "id", str(id))[0]
-    attributes = dbt.describe("cpr.mooks")
+    mookentry = dbt.find(MOOKDB, "id", str(id))[0]
+    attributes = dbt.describe(MOOKDB)
     for index,attribute in enumerate(attributes):  
         if isinstance(mookentry[index], numbers.Number):
             value = mookentry[index]
             if attribute[0] == "mook_type":
-                temptype = dbt.find("cpr.mook_type","id", str(value))
+                temptype = dbt.find(MOOKTYPEDB,"id", str(value))
                 newmook.mooktype = temptype[0][1]
             if attribute[0] == "type" and value != "1":
-                temptype = dbt.find("cpr.type","id", str(value))
+                temptype = dbt.find(TYPEDB,"id", str(value))
                 newmook.mooktype = temptype[0][1]
             if attribute[0] == "rep":
                 newmook.rep = mookentry[index]
@@ -34,10 +54,10 @@ def loadbasemook(id, newmook):
     return newmook
 
 def loadmookarmour(id, newmook):
-    headarm = dbt.find("cpr.mook_head_armour","mookid", str(id))
-    harmourtype = dbt.find("cpr.armour","id", str(headarm[0][2]))
-    bodyarm = dbt.find("cpr.mook_body_armour","mookid", str(id))
-    barmourtype = dbt.find("cpr.armour","id", str(bodyarm[0][2]))
+    headarm = dbt.find(MOOKHEADARMOURDB,"mookid", str(id))
+    harmourtype = dbt.find(ARMOURDB,"id", str(headarm[0][2]))
+    bodyarm = dbt.find(MOOKBODYARMOURDB,"mookid", str(id))
+    barmourtype = dbt.find(ARMOURDB,"id", str(bodyarm[0][2]))
     if headarm[0][3] == "y":
         headsp = int(harmourtype[0][2]) + 1
         headarmourname = "(TUp) " + harmourtype[0][1]
@@ -56,8 +76,8 @@ def loadmookarmour(id, newmook):
     return newmook
 
 def loadmookstats(id, newmook):
-    stats = dbt.find("cpr.mook_stat", "mookid", str(id))
-    stattitles = dbt.findall("cpr.stats")
+    stats = dbt.find(MOOKSTATDB, "mookid", str(id))
+    stattitles = dbt.findall(STATSDB)
     mookstats = {}
     for index,stat in enumerate(stats):
         mod = 0
@@ -77,9 +97,9 @@ def loadmookstats(id, newmook):
 
 def loadmookweapons(id, newmook):
     # complexity 22/15
-    weapontypes = dbt.findall("cpr.weapons")
-    qualitytypes = dbt.findall("cpr.weapon_quality")
-    weapons = dbt.find("cpr.mook_weapon","mookid", str(id))
+    weapontypes = dbt.findall(WEAPONDB)
+    qualitytypes = dbt.findall(WEAPONQUALITYDB)
+    weapons = dbt.find(MOOKWEAPONDB,"mookid", str(id))
     weaponlist = []
     for index, weapon in enumerate(weapons):
         for weapontype in weapontypes:
@@ -96,8 +116,8 @@ def loadmookweapons(id, newmook):
 
 def loadmookskills(id, newmook):
     # complexity 33/15
-    roletitle = dbt.findall("cpr.roles")
-    roles = dbt.find("cpr.mook_role","mookid", str(id))
+    roletitle = dbt.findall(ROLEDB)
+    roles = dbt.find(MOOKROLEDB,"mookid", str(id))
     mookskills = {}
     for index,role in enumerate(roles):
         for roletitle in roletitle:
@@ -108,8 +128,8 @@ def loadmookskills(id, newmook):
                     if role[4] != None:
                         mookroleskill += " (" + role[4] + ")"
                     mookskills[roletitle[1]] = mookroleskill
-    skilltitles = dbt.findall("cpr.skills")
-    skills = dbt.find("cpr.mook_skill","mookid", str(id))
+    skilltitles = dbt.findall(SKILLDB)
+    skills = dbt.find(MOOKSKILLDB,"mookid", str(id))
     for index,skill in enumerate(skills):
         for skilltitle in skilltitles:
             if skilltitle[0] == skill[2]:
@@ -127,8 +147,8 @@ def loadmookskills(id, newmook):
 
 def loadmookequipment(id, newmook):
     # complexity 16/15
-    equipmenttable = dbt.findall("cpr.equipment")
-    equipment = dbt.find("cpr.mook_equipment","mookid", str(id))
+    equipmenttable = dbt.findall(EQUIPMENTDB)
+    equipment = dbt.find(MOOKEQUIPMENTDB,"mookid", str(id))
     mookequipment = []
     for index, equipment in enumerate(equipment):
         for equipmenttitle in equipmenttable:
@@ -144,8 +164,8 @@ def loadmookequipment(id, newmook):
 
 def loadmookcyberwear(id, newmook):
     # complexity 16/15
-    cyberweartable = dbt.findall("cpr.cyberwear")
-    cyberwear = dbt.find("cpr.mook_cyberwear","mookid", str(id))
+    cyberweartable = dbt.findall(CYBERWEARDB)
+    cyberwear = dbt.find(MOOKCYBERWEARDB,"mookid", str(id))
     mookcyberwear = []
     for index, cyberwear in enumerate(cyberwear):
         for cyberweartitle in cyberweartable:
@@ -236,7 +256,7 @@ def get_weapons(*arg):
     tempweaponname = mookweaponchoosen.get()
     strippoor = tempweaponname.lstrip("Poor Quality ")
     weaponname = strippoor.lstrip("Excelent Quality ")
-    weaponprofile = dbt.find("cpr.weapons", "name", weaponname)[0]
+    weaponprofile = dbt.find(WEAPONDB, "name", weaponname)[0]
     rof_label['text'] = weaponprofile[3]
     damage_label['text'] = weaponprofile[2] + "D6"
 
@@ -452,8 +472,8 @@ mookcyberwear_label.place(x=15, y=580)
 dbt = databaseTools.databaseTools()
 mooks = []
 # fill array
-mooktable = dbt.find("cpr.mooks", "type", "1")
-# mooktable = dbt.findall("cpr.mooks")
+mooktable = dbt.find(MOOKDB, "type", "1")
+# mooktable = dbt.findall(MOOKDB)
 
 # for index,entry in enumerate(mooktable):
 #     mooks.append(loadmooks(index+1))
