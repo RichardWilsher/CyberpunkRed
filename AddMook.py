@@ -41,7 +41,13 @@ MOOKCYBERWEARDB = "cpr.mook_cyberwear"
 
 
 def sort(mook_skills):
-    mook_skills.sort(key=lambda x: x.name)
+    mook_skills.sort(key=lambda x: (x.name, x.notes))
+    skills_listbox.delete(0, END)
+    for skill in mook_skills:
+        if skill.notes == "":
+            skills_listbox.insert(END, f"{skill.name} {skill.value}")
+        else:
+            skills_listbox.insert(END, f"{skill.name} ({skill.notes}) {skill.value}")
     return mook_skills
 
 def calc_hp(*arg):
@@ -324,31 +330,51 @@ def weaponremove():
         weapon_listbox.delete(i)
 
 def skilladd():
-    skill = skill_combo.get().strip()
+    new_skill = sc.skill("", 0, "", 1)
+    new_skill.name = skill_combo.get().strip()
+
     try:
-        value = int(skill_value.get())
+        new_skill.value = int(skill_value.get())
     except ValueError:
         messagebox.showerror("Invalid Value", "Skill value must be a number.")
         return
 
-    # Normalize the skill name for comparison
-    normalized_skill = skill.lower()
+    new_skill.notes = skillnotes_entry.get()
+    new_skill.id = db.find(SKILLDB, "name", new_skill.name)[0][0]
+
+    if new_skill.notes != "":
+        name = new_skill.name + " " + new_skill.notes
+    else:
+        name = new_skill.name
 
     # Check for existing skill to update
-    for i, (existing_skill, _) in enumerate(mook_skills):
-        if existing_skill.lower() == normalized_skill:
-            mook_skills[i] = (skill, value)  # preserve casing from input
+    for i, skill in enumerate(mook_skills):
+        if skill.notes != "":
+            skillname = skill.name + " " + skill.notes
+        else:
+            skillname = skill.name
+        
+        if name == skillname:
+            mook_skills[i] = new_skill  # ✅ Assign the instance, not the class
             skills_listbox.delete(i)
-            skills_listbox.insert(i, f"{skill} {value}")
+            if new_skill.notes == "":
+                skills_listbox.insert(i, f"{new_skill.name} {new_skill.value}")
+            else:
+                skills_listbox.insert(i, f"{new_skill.name} ({new_skill.notes}) {new_skill.value}")
             break
     else:
         # Skill not found, so append
-        mook_skills.append((skill, value))
-        skills_listbox.insert(END, f"{skill} {value}")
+        mook_skills.append(new_skill)  # ✅ Append the instance
+        if new_skill.notes == "":
+            skills_listbox.insert(END, f"{new_skill.name} {new_skill.value}")
+        else:
+            skills_listbox.insert(END, f"{new_skill.name} ({new_skill.notes}) {new_skill.value}")
 
     # Reset input fields
     skill_combo.set("")
-    skill_value.delete(0, END)
+    skill_value.set("3")
+    skillnotes_entry.delete(0, END)
+    sort(mook_skills)
 
 def skillremove():
     global mook_skills
@@ -356,6 +382,21 @@ def skillremove():
     for i in selected_indices:
         mook_skills.pop(i)
         skills_listbox.delete(i)
+
+def on_skill_select(event):
+    selection = event.widget.curselection()
+    if not selection:
+        return
+    index = selection[0]
+
+    try:
+        skill = mook_skills[index]
+        skill_combo.set(skill.name)
+        skill_value.set(str(skill.value))  # assuming skill_value is a StringVar
+        skillnotes_entry.delete(0, END)
+        skillnotes_entry.insert(0, skill.notes)
+    except IndexError:
+        pass
 
 def equipmentadd():
     global mook_equipment
@@ -725,6 +766,7 @@ skilllabel.place(x=15, y=428)
 display_skills = []
 skill_list_items =tk.Variable(win, value=display_skills)
 skills_listbox = tk.Listbox(win, listvariable=skill_list_items, height=8, width=20, font=("Arial", 12), bg='#fff', fg='#000')
+skills_listbox.bind("<<ListboxSelect>>", on_skill_select) 
 skills_listbox.place(x=10, y=460)
 skills_scrollbar = ttk.Scrollbar(win, orient="vertical", command=skills_listbox.yview)
 skills_listbox.configure(yscrollcommand=skills_scrollbar.set)
@@ -768,7 +810,7 @@ canvas.create_line(15, 647, 818, 647, fill="#000", width=2)
 equiplabel = tk.Label(win, text="EQUIPMENT", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
 equiplabel.place(x=15, y=620)
 # equipment
-equipment = db.orderedselectedfindall(EQUIPMENTDB, "name", "name")   
+equipment = db.orderedselectedfind(EQUIPMENTDB, "name", "display", "y", "name")   
 display_equipment = []
 for equip in equipment:
     display_equipment.append(equip[0])
@@ -780,7 +822,7 @@ equipment_listbox.configure(yscrollcommand=equipment_scrollbar.set)
 equipment_scrollbar.pack(side="right", fill="y")
 equipment_scrollbar.place(x=192, y=650, height=79)
 # equipment combo
-equipment = db.orderedselectedfind(EQUIPMENTDB, "name", "display", "y", "name")
+# equipment = db.orderedselectedfindall(EQUIPMENTDB, "name", "display", "y", "name")
 equipment_names = []
 for equip in equipment:
     equipment_names.append(equip[0])
