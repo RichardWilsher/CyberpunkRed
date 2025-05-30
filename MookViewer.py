@@ -202,8 +202,15 @@ def get_index(*arg):
     mookemp_label['text'] = stats.get('Emp')
     global weaponlist
     weaponlist = mooks[mookchoosen.current()].weapons
-    mookweaponchoosen['value'] = tuple(weaponlist)
-    mookweaponchoosen.current(0)
+    if len(mooks[mookchoosen.current()].weapons) !=0:
+        mookweaponchoosen['value'] = tuple(weaponlist)
+        mookweaponchoosen.current(0)
+    else:
+        mookweaponchoosen['value'] = ""
+        weaponlist = []
+        mookweaponchoosen.set('')
+        rof_label['text'] = ""
+        damage_label['text'] = ""
     mookarmourhead_label['text'] = mooks[mookchoosen.current()].headarmour[0]
     mookarmourheadsp_label['text'] = mooks[mookchoosen.current()].headarmour[1]
     mookarmourbody_label['text'] = mooks[mookchoosen.current()].bodyarmour[0]
@@ -244,9 +251,14 @@ def get_weapons(*arg):
     tempweaponname = mookweaponchoosen.get()
     strippoor = tempweaponname.lstrip("Poor Quality ")
     weaponname = strippoor.lstrip("Excelent Quality ")
-    weaponprofile = dbt.find(WEAPONDB, "name", weaponname)[0]
-    rof_label['text'] = weaponprofile[3]
-    damage_label['text'] = weaponprofile[2] + "D6"
+    if tempweaponname != "":
+        weaponprofile = dbt.find(WEAPONDB, "name", weaponname)[0]
+        rof_label['text'] = weaponprofile[3]
+        damage_label['text'] = weaponprofile[2] + "D6"
+    else:
+        weaponprofile = ""
+        rof_label['text'] = ""
+        damage_label['text'] = ""
 
 
 # Build UI        
@@ -353,8 +365,8 @@ deathsavelabel.place(x=510, y=72)
 hplabel = tk.Label(win, text="HP", font=("Arial", 14, "bold"), bg='#fff', fg='#000')
 hplabel.place(x=687, y=16)
 # Value Labels
-mookrole_label = tk.Label(win, text="Mook Role", font=("Arial", 12), bg='#fff', fg='#000')
-mookrole_label.place(x=80, y=82)
+mookrole_label = tk.Label(win, text="Mook Role", wraplength=450, justify="left", font=("Arial", 12), bg='#fff', fg='#000')
+mookrole_label.place(x=80, y=77)
 mookrep_label = tk.Label(win, text="rep", font=("Arial", 12), bg='#fff', fg='#000')
 mookrep_label.place(x=455, y=25)
 mookseriouslywounded_label = tk.Label(win, text="sw", font=("Arial", 12), bg='#fff', fg='#000')
