@@ -8,10 +8,6 @@ import weaponclass as wc
 import equipmentclass as ec
 import cyberwearclass as cc
 
-# TODO add Entry for Tech/Medtech specialisations
-# TODO multi Role Support
-# TODO UI Tidyup
-
 db = databaseTools.databaseTools()
 standardstats = [2, 3, 4, 5, 6, 7, 8]
 # multiple entry arrays
@@ -22,8 +18,6 @@ mook_cyberwear = []
 
 MOOKDB = "cpr.mooks"
 MOOKTYPEDB = "cpr.mook_type"
-MOOKROLEDB = "cpr.mook_role"
-ROLEDB = "cpr.roles"
 TYPEDB = "cpr.type"
 WEAPONDB = "cpr.weapons"
 SKILLDB = "cpr.skills"
@@ -64,17 +58,6 @@ def calc_hp(*arg):
     mookdeathsave_label.config(text=str(body))
     seriouslywounded = math.ceil(hp/2)
     mookseriouslywounded_label.config(text=str(seriouslywounded))
-
-def changerole(*arg):
-    if role_combo.get() == 'none':
-        roleability_label.config(text="Role Ability:")
-        roleability_combo.place_forget()
-        roleability_label.place_forget()
-    else:
-        roleability_combo.place(x=455, y=82)
-        roleability_label.place(x=310, y=82)
-        roleabilityname = db.find(ROLEDB,"name", role_combo.get())
-        roleability_label.config(text=roleabilityname[0][1] +":")
         
 def change_type(*arg):
     if type_combo.get() == 'Mook':
@@ -114,16 +97,8 @@ def clear():
     type_combo.current(0)
     mookname_entry.delete(0, tk.END)
     rep_combo.current(0)
-    roleability_combo.current(0)
-    roles = db.orderedselectedfindall(ROLEDB, "name", "name")
-    position = 0
-    for index,role in enumerate(roles):
-        string = str(role)
-        string = string.lstrip('(\')')
-        string = string.rstrip(',\')')
-        if string == "none":
-            position = index
-    role_combo.current(position)
+    role_entry.delete(0, tk.END)
+    role_entry.insert(0, "none")
     location_entry.delete(0, tk.END)
     # stats
     int_combo.current(0)
@@ -225,20 +200,12 @@ def save_mook():
     mtype = db.find(TYPEDB,"name", temp_type)[0][0]
     tempmook_type = mooktype_combo.get()
     mook_type = db.find(MOOKTYPEDB,"name", tempmook_type)[0][0]
-    locatiom = location_entry.get()
+    location = location_entry.get()
     rep = rep_combo.get()
-    db.insert(MOOKDB, ["name", "mook_type", "type", "location", "rep"], [name, mook_type, mtype, locatiom, rep], ["string", "int", "int", "string", "int"])
+    role = role_entry.get()
+    db.insert(MOOKDB, ["name", "mook_type", "type", "location", "rep", "role"], [name, mook_type, mtype, location, rep, role], ["string", "int", "int", "string", "int", "string"])
     mookid = db.find(MOOKDB,"name", name)[0][0]
     return mookid
-
-def save_role(mookid):
-    role = role_combo.get()
-    roleid = db.find(ROLEDB,"name", role)[0][0]
-    value = roleability_combo.get()
-    if role == 'none':
-        db.insert(MOOKROLEDB, ["mookid", "roleid"], [mookid, roleid], ["int", "int"])
-    else:
-        db.insert(MOOKROLEDB, ["mookid", "roleid", "value"], [mookid, roleid, value], ["int", "int", "int"])
 
 def save_stats(mookid):
     stats = [int_combo.get(), ref_combo.get(), dex_combo.get(), tech_combo.get(), cool_combo.get(), will_combo.get(), luck_combo.get(), move_combo.get(), body_combo.get(), emp_combo.get()]
@@ -304,7 +271,6 @@ def save():
                 readytocommit = False
                 messagebox.showerror("Error", "Mook ID not Found")
     if readytocommit:
-        save_role(mookid)
         save_stats(mookid)
         save_armour(mookid)
         save_weapons(mookid)
@@ -507,11 +473,11 @@ mastertype = db.selectedfindall(TYPEDB, "name")
 type_combo['values'] = mastertype
 type_combo['state'] = 'readonly'
 type_combo.current(0)
-type_combo.place(x=80, y=15)
+type_combo.place(x=100, y=15)
 name_label = tk.Label(win, text="Name:", font=("Arial", 12), bg='#fff', fg='#000')
 name_label.place(x=10, y=55)
 mookname_entry = tk.Entry(win, width=20, font=("Arial", 12), bg='#fff', fg='#000')
-mookname_entry.place(x=80, y=55)
+mookname_entry.place(x=100, y=55)
 rep_label = tk.Label(win, text="Rep:", font=("Arial", 12), bg='#fff', fg='#000')
 rep_label.place(x=310, y=55)
 rep_v = tk.StringVar() 
@@ -519,32 +485,11 @@ rep_combo = ttk.Combobox(win, width = 2, textvariable = rep_v)
 rep_combo['values'] = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10')
 rep_combo['state'] = 'readonly'
 rep_combo.current(0)
-rep_combo.place(x=455, y=55)
-roleability_label = tk.Label(win, text="Role Ability:", font=("Arial", 12), bg='#fff', fg='#000')
-roleability_label.place(x=310, y=82)
-roleability_v = tk.StringVar()
-roleability_combo = ttk.Combobox(win, width = 2, textvariable = roleability_v)
-roleability_combo['values'] = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10')
-roleability_combo['state'] = 'readonly'
-roleability_combo.current(0)
-roleability_combo.place(x=455, y=82)
-role_label = tk.Label(win, text="Role:", font=("Arial", 12), bg='#fff', fg='#000')
+role_entry = tk.Entry(win, width=35, font=("Arial", 12), bg='#fff', fg='#000')
+role_entry.insert(0, "none")
+role_entry.place(x=100, y=82)
+role_label = tk.Label(win, text="Role Ability:", font=("Arial", 12), bg='#fff', fg='#000')
 role_label.place(x=10, y=82)
-role_v = tk.StringVar()
-role_v.trace_add('write', changerole)
-role_combo = ttk.Combobox(win, width = 10, textvariable = role_v)
-roles = db.orderedselectedfindall(ROLEDB, "name", "name")
-role_combo['values'] = roles
-role_combo['state'] = 'readonly'
-position = 0
-for index,role in enumerate(roles):
-    string = str(role)
-    string = string.lstrip('(\')')
-    string = string.rstrip(',\')')
-    if string == "none":
-        position = index
-role_combo.current(position)
-role_combo.place(x=80, y=82)
 location_label = tk.Label(win, text="Location:", font=("Arial", 12), bg='#fff', fg='#000')
 location_label.place(x=310, y=110)
 location_entry = tk.Entry(win, width=20, font=("Arial", 12), bg='#fff', fg='#000')

@@ -11,8 +11,6 @@ import math
 
 MOOKDB = "cpr.mooks"
 MOOKTYPEDB = "cpr.mook_type"
-MOOKROLEDB = "cpr.mook_role"
-ROLEDB = "cpr.roles"
 TYPEDB = "cpr.type"
 WEAPONDB = "cpr.weapons"
 SKILLDB = "cpr.skills"
@@ -51,6 +49,8 @@ def loadbasemook(id, newmook):
                 newmook.name = mookentry[index]
             if attribute[0] == "location":
                 newmook.location = mookentry[index]
+            if attribute[0] == "role":
+                newmook.role = mookentry[index]
     return newmook
 
 def loadmookarmour(id, newmook):
@@ -115,19 +115,7 @@ def loadmookweapons(id, newmook):
     return newmook
 
 def loadmookskills(id, newmook):
-    # complexity 33/15
-    roletitle = dbt.findall(ROLEDB)
-    roles = dbt.find(MOOKROLEDB,"mookid", str(id))
     mookskills = {}
-    for index,role in enumerate(roles):
-        for roletitle in roletitle:
-            if roletitle[0] == role[2]:
-                newmook.role = roletitle[2]
-                if role[2] != 1:
-                    mookroleskill = role[3]
-                    if role[4] != None:
-                        mookroleskill += " (" + role[4] + ")"
-                    mookskills[roletitle[1]] = mookroleskill
     skilltitles = dbt.findall(SKILLDB)
     skills = dbt.find(MOOKSKILLDB,"mookid", str(id))
     for index,skill in enumerate(skills):
