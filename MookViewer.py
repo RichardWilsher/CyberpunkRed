@@ -8,6 +8,9 @@ import math
 
 # TODO add type combo box for type (mook, NPC, PC)
 # TODO potential add combo box for mook type (mook, hardened mook, etc)
+# TODO add notes field
+# TODO add weapon attachments
+# TODO add vehicles
 
 MOOKDB = "cpr.mooks"
 MOOKTYPEDB = "cpr.mook_type"

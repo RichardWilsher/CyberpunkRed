@@ -8,6 +8,10 @@ import weaponclass as wc
 import equipmentclass as ec
 import cyberwearclass as cc
 
+# TODO add notes field
+# TODO add weapon attachments
+# TODO add vehicles
+
 db = databaseTools.databaseTools()
 standardstats = [2, 3, 4, 5, 6, 7, 8]
 # multiple entry arrays
