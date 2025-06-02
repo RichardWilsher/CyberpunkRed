@@ -42,21 +42,32 @@ class orm:
         return False
 
     @ensure_connection
-    def find(self, column_name=None, value=None, order=None, fuzzy=False):
+    def find(self, columns=None, column_name=None, value=None, order=None, fuzzy=False):
         try:
-            query = f"SELECT * FROM {self.tablename}"
+            if columns:
+                if isinstance(columns, (list, tuple)):
+                    columns_str = ", ".join([f"`{col.strip()}`" for col in columns])
+                else:
+                    columns_str = f"`{columns.strip()}`"
+                query = f"SELECT {columns_str} FROM {self.tablename}"
+            else:
+                query = f"SELECT * FROM {self.tablename}"
+            
             if column_name:
                 if fuzzy:
                     query += f" WHERE {column_name} LIKE %s"
                     value = f"%{value}%"
                 else:
                     query += f" WHERE {column_name} = %s"
+        
             if order:
                 query += f" ORDER BY {order}"
+        
             if column_name:
                 self.cursor.execute(query, (value,))
             else:
                 self.cursor.execute(query)
+            
             return self.cursor.fetchall()
         except Error as e:
             print("Query:", query)

@@ -1,4 +1,3 @@
-import databaseTools
 import mook
 import tkinter as tk
 from tkinter import END, ttk, messagebox 
@@ -7,36 +6,18 @@ import skillclass as sc
 import weaponclass as wc
 import equipmentclass as ec
 import cyberwearclass as cc
+import orm as orm
 
 # TODO add notes field
 # TODO add weapon attachments
 # TODO add vehicles
 
-db = databaseTools.databaseTools()
 standardstats = [2, 3, 4, 5, 6, 7, 8]
 # multiple entry arrays
 mook_weapons = []
 mook_skills = []
 mook_equipment = []
 mook_cyberwear = []
-
-MOOKDB = "cpr.mooks"
-MOOKTYPEDB = "cpr.mook_type"
-TYPEDB = "cpr.type"
-WEAPONDB = "cpr.weapons"
-SKILLDB = "cpr.skills"
-EQUIPMENTDB = "cpr.equipment"
-CYBERWEARDB = "cpr.cyberwear"
-ARMOURDB = "cpr.armour"
-WEAPONQUALITYDB = "cpr.weapon_quality"
-MOOKSTATDB = "cpr.mook_stat"
-MOOKHEADARMOURDB = "cpr.mook_head_armour"
-MOOKBODYARMOURDB = "cpr.mook_body_armour"
-MOOKWEAPONDB = "cpr.mook_weapon"
-MOOKSKILLDB = "cpr.mook_skill"
-MOOKEQUIPMENTDB = "cpr.mook_equipment"
-MOOKCYBERWEARDB = "cpr.mook_cyberwear"
-
 
 def sort(mook_skills):
     mook_skills.sort(key=lambda x: (x.name, x.notes))
@@ -75,13 +56,13 @@ def change_armour(*arg):
     global headsp_label
     global bodysp_label
     try: 
-        armour_value = db.find(ARMOURDB,"name", headsp_combo.get())
+        armour_value = armourdb.find("","name", headsp_combo.get())
         headsp = armour_value[0][2]
     except Exception:
         headsp = 4
     headsp_label.config(text=headsp)
     try:
-        armour_value = db.find(ARMOURDB,"name", bodysp_combo.get())
+        armour_value = armourdb.find("","name", bodysp_combo.get())
         bodysp = armour_value[0][2]
     except Exception:
         bodysp = 4
@@ -201,26 +182,26 @@ def clear():
 def save_mook():
     name = mookname_entry.get()
     temp_type = type_combo.get()
-    mtype = db.find(TYPEDB,"name", temp_type)[0][0]
+    mtype = typedb.find("id","name", temp_type)[0][0]
     tempmook_type = mooktype_combo.get()
-    mook_type = db.find(MOOKTYPEDB,"name", tempmook_type)[0][0]
+    mook_type = mooktypedb.find("id","name", tempmook_type)[0][0]
     location = location_entry.get()
     rep = rep_combo.get()
     role = role_entry.get()
-    db.insert(MOOKDB, ["name", "mook_type", "type", "location", "rep", "role"], [name, mook_type, mtype, location, rep, role], ["string", "int", "int", "string", "int", "string"])
-    mookid = db.find(MOOKDB,"name", name)[0][0]
+    mookdb.insert(["name", "mook_type", "type", "location", "rep", "role"], [name, mook_type, mtype, location, rep, role])
+    mookid = mookdb.find("id","name", name)[0][0]
     return mookid
 
 def save_stats(mookid):
     stats = [int_combo.get(), ref_combo.get(), dex_combo.get(), tech_combo.get(), cool_combo.get(), will_combo.get(), luck_combo.get(), move_combo.get(), body_combo.get(), emp_combo.get()]
     for index,stat in enumerate(stats):
-        db.insert(MOOKSTATDB, ["mookid", "statid", "value"], [mookid, index+1, stat], ["int", "int", "string"])
+        mookstatdb.insert(["mookid", "statid", "value"], [mookid, index+1, stat])
 
 def save_armour(mookid):
     headsp = headsp_combo.get()
-    headid = db.find(ARMOURDB,"name", headsp)[0][0]
+    headid = armourdb.find("", "name", headsp)[0][0]
     bodysp = bodysp_combo.get()
-    bodyid = db.find(ARMOURDB,"name", bodysp)[0][0]
+    bodyid = armourdb.find("", "name", bodysp)[0][0]
     if headtup_var.get() == 1:
         headtup = 'y'
     else:
@@ -229,27 +210,27 @@ def save_armour(mookid):
         bodytup = 'y'
     else:
         bodytup = 'n'
-    db.insert(MOOKHEADARMOURDB, ["mookid", "armourid", "techupgraded"], [mookid, headid, headtup], ["int", "int", "string"])
-    db.insert(MOOKBODYARMOURDB, ["mookid", "armourid", "techupgraded"], [mookid, bodyid, bodytup], ["int", "int", "string"])
+    mookheadarmourdb.insert(["mookid", "armourid", "techupgraded"], [mookid, headid, headtup])
+    mookbodyarmourdb.insert(["mookid", "armourid", "techupgraded"], [mookid, bodyid, bodytup])
 
 def save_weapons(mookid):
     for weapon in mook_weapons:
         quality = weapon.quality
-        qualityid = db.find(WEAPONQUALITYDB,"name", quality)[0][0]
-        db.insert(MOOKWEAPONDB, ["mookid", "weaponid", "qualityid"], [mookid, weapon.id, qualityid], ["int", "int", "int"])
+        qualityid = weaponqualitydb.find("", "name", quality)[0][0]
+        mookweapondb.insert(["mookid", "weaponid", "qualityid"], [mookid, weapon.id, qualityid])
 
 def save_skills(mookid):
     sort(mook_skills)
     for skill in mook_skills:
         value = skill.value
         notes = skill.notes
-        db.insert(MOOKSKILLDB, ["mookid", "skillid", "value", "notes"], [mookid, skill.id, value, notes], ["int", "int", "string", "string"])
+        mookskilldb.insert(["mookid", "skillid", "value", "notes"], [mookid, skill.id, value, notes])
 
 def save_equipment(mookid):
     for equipment in mook_equipment:
         quantity = equipment.quantity
         notes = equipment.notes
-        db.insert(MOOKEQUIPMENTDB, ["mookid", "equipmentid", "quantity", "notes"], [mookid, equipment.id, quantity, notes], ["int", "int", "string", "string"])
+        mookequipmentdb.insert(["mookid", "equipmentid", "quantity", "notes"], [mookid, equipment.id, quantity, notes])
         
 
 def save_cyberwear(mookid):
@@ -257,7 +238,7 @@ def save_cyberwear(mookid):
         cyberwearid = cyberwear.id
         quantity = cyberwear.quantity
         notes = cyberwear.notes
-        db.insert(MOOKCYBERWEARDB, ["mookid", "cyberwearid", "quantity", "notes"], [mookid, cyberwearid, quantity, notes], ["int", "int", "string", "string"])  
+        mookcyberweardb.insert(["mookid", "cyberwearid", "quantity", "notes"], [mookid, cyberwearid, quantity, notes])  
 
 def save():
     readytocommit = True
@@ -266,7 +247,7 @@ def save():
         readytocommit = False
         messagebox.showerror("Error", "Mook Name is Required")
     else:
-        if len(db.find(MOOKDB,"name", mookname_entry.get())) > 0:
+        if len(mookdb.find("", "name", mookname_entry.get())) > 0:
             readytocommit = False
             messagebox.showerror("Error", "Mook Name already Exists")
         else:
@@ -285,8 +266,8 @@ def save():
 
 def weaponadd():
     global mook_weapons
-    weapon = db.find(WEAPONDB,"name", weapon_combo.get())
-    quality = db.find(WEAPONQUALITYDB,"name", weaponquality_combo.get())
+    weapon = weapondb.find("", "name", weapon_combo.get())
+    quality = weaponqualitydb.find("", "name", weaponquality_combo.get())
     weaponentry = wc.weapon(weapon[0][1], quality[0][1], quality[0][0], weapon[0][2], weapon[0][3], weapon[0][0])
     mook_weapons.append(weaponentry)
     weaponname = quality[0][1] + " " + weapon[0][1]
@@ -310,7 +291,7 @@ def skilladd():
         return
 
     new_skill.notes = skillnotes_entry.get()
-    new_skill.id = db.find(SKILLDB, "name", new_skill.name)[0][0]
+    new_skill.id = skilldb.find("", "name", new_skill.name)[0][0]
 
     if new_skill.notes != "":
         name = new_skill.name + " " + new_skill.notes
@@ -370,7 +351,7 @@ def on_skill_select(event):
 
 def equipmentadd():
     global mook_equipment
-    equipment = db.find(EQUIPMENTDB,"name", equipment_combo.get())
+    equipment = equipmentdb.find("", "name", equipment_combo.get())
     quantity = int(equipmentquantity_combo.get())
     notes = equipmentnotes_entry.get()
     equipmententry = ec.equipment(equipment[0][2], quantity, notes, equipment[0][0])
@@ -406,7 +387,7 @@ def equipmentremove():
 
 def cyberwearadd():
     global mook_cyberwear
-    cyberwear = db.find(CYBERWEARDB,"name", cyberwear_combo.get())
+    cyberwear = cyberweardb.find("", "name", cyberwear_combo.get())
     quantity = int(cyberwearquantity_combo.get())
     notes = cyberwearnotes_entry.get()
     cyberwearentry = cc.cyberwear(cyberwear[0][2], quantity, notes, cyberwear[0][0])
@@ -456,9 +437,28 @@ rectangle = canvas.create_rectangle(9, 9, w-3, h-3, fill="#ddd", outline="#ddd",
 rectangle = canvas.create_rectangle(5, 5, w-7, h-7, fill="white", outline="#ccc", width=2)
 canvas.pack()
 
+# Declare and load databases
+mookdb = orm.orm("cpr.mooks")
+mooktypedb = orm.orm("cpr.mook_type")
+typedb = orm.orm("cpr.type")
+weapondb = orm.orm("cpr.weapons")
+skilldb = orm.orm("cpr.skills")
+equipmentdb = orm.orm("cpr.equipment")
+cyberweardb = orm.orm("cpr.cyberwear")
+armourdb = orm.orm("cpr.armour")
+weaponqualitydb = orm.orm("cpr.weapon_quality")
+mookstatdb = orm.orm("cpr.mook_stat")
+mookheadarmourdb = orm.orm("cpr.mook_head_armour")
+mookbodyarmourdb = orm.orm("cpr.mook_body_armour")
+mookweapondb = orm.orm("cpr.mook_weapon")
+mookskilldb = orm.orm("cpr.mook_skill")
+mookequipmentdb = orm.orm("cpr.mook_equipment")
+mookcyberweardb = orm.orm("cpr.mook_cyberwear")
+statsdb = orm.orm("cpr.stats")
+
 mooktype_v = tk.StringVar()
 mooktype_combo = ttk.Combobox(win, width = 20, textvariable = mooktype_v)
-mooktype = db.selectedfindall(MOOKTYPEDB, "name")
+mooktype = mooktypedb.find("name") 
 mooktypes = []
 for mook in mooktype:
     mooktypes.append(mook[0])
@@ -473,8 +473,11 @@ type_label.place(x=10, y=15)
 type_v = tk.StringVar()
 type_v.trace_add('write', change_type)
 type_combo = ttk.Combobox(win, width = 5, textvariable = type_v)
-mastertype = db.selectedfindall(TYPEDB, "name")
-type_combo['values'] = mastertype
+mastertypes = typedb.find("name") 
+# mastertypes = []
+# for master in mastertype:
+#     mastertypes.append(master[0])
+type_combo['values'] = mastertypes
 type_combo['state'] = 'readonly'
 type_combo.current(0)
 type_combo.place(x=100, y=15)
@@ -632,7 +635,7 @@ headsp_label.place(x=335, y=232)
 bodysp_label = tk.Label(win, text="4", font=("Arial", 10, "bold"), bg='#fff', fg='#000')
 bodysp_label.place(x=335, y=280)
 # armour combo boxes
-armours = db.selectedfindall(ARMOURDB,"name")
+armours = armourdb.find("name")
 armour_names = []
 for armour in armours:
     armour_names.append(armour[0]) 
@@ -666,8 +669,8 @@ canvas.create_line(15, 347, 818, 347, fill="#000", width=2)
 weapon_label = tk.Label(win, text="WEAPONS", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
 weapon_label.place(x=15, y=320)
 # weapon controls
-weapons = db.selectedfindall(WEAPONDB,"name")
-qualities = db.selectedfindall(WEAPONQUALITYDB,"name")
+weapons = weapondb.find("name")
+qualities = weaponqualitydb.find("name")
 weapon_list = []
 for weapon in weapons:
     weapon_list.append(weapon[0])
@@ -678,7 +681,7 @@ weapon_listbox['yscrollcommand'] = weapon_scrollbar.set
 weapon_scrollbar.pack(side="right", fill="y")
 weapon_scrollbar.place(x=192, y=360, height=61)
 # Weapon Combos
-weapon_quality = db.selectedfindall(WEAPONQUALITYDB,"name")
+weapon_quality = weaponqualitydb.find("name")
 weaponquality_value = tk.StringVar()
 weaponquality_combo = ttk.Combobox(win, width = 20, textvariable = weaponquality_value)
 weaponquality_combo['values'] = weapon_quality
@@ -687,7 +690,7 @@ weaponquality_combo.current(0)
 weaponquality_combo.place(x=230, y=380)
 weaponquality_label = tk.Label(win, text="Weapon Quality", font=("Arial", 10), bg='#fff', fg='#000')
 weaponquality_label.place(x=230, y=355)
-weapons = db.selectedfindall(WEAPONDB,"name")
+weapons = weapondb.find("name")
 weapon_names = []
 for weapon in weapons:
     weapon_names.append(weapon[0])
@@ -722,7 +725,7 @@ skills_listbox.configure(yscrollcommand=skills_scrollbar.set)
 skills_scrollbar.pack(side="right", fill="y")
 skills_scrollbar.place(x=192, y=460, height=155)
 # Skills combo
-skills = db.orderedselectedfindall(SKILLDB,"name","name")
+skills = skilldb.find("name", "", "", "name")
 skill_names = []
 for skill in skills:
     skill_names.append(skill[0])
@@ -759,7 +762,7 @@ canvas.create_line(15, 647, 818, 647, fill="#000", width=2)
 equiplabel = tk.Label(win, text="EQUIPMENT", font=("Arial", 12, "bold"), bg='#a32', fg='#fff')
 equiplabel.place(x=15, y=620)
 # equipment
-equipment = db.orderedselectedfind(EQUIPMENTDB, "name", "display", "y", "name")   
+equipment = equipmentdb.find("name", "display", "y", "name")   
 display_equipment = []
 for equip in equipment:
     display_equipment.append(equip[0])
@@ -819,7 +822,7 @@ cyberwear_listbox.configure(yscrollcommand=cyberwear_scrollbar.set)
 cyberwear_scrollbar.pack(side="right", fill="y")
 cyberwear_scrollbar.place(x=192, y=770, height=79)
 # Cyberwear combo
-cyberwear = db.orderedselectedfindall(CYBERWEARDB, "name", "name")
+cyberwear = cyberweardb.find("name", "", "", "name")
 cyberwear_names = []
 for cyber in cyberwear:
     cyberwear_names.append(cyber[0])

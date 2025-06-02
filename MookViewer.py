@@ -3,7 +3,7 @@ import orm
 import numbers
 import mook
 import tkinter as tk
-from tkinter import ttk 
+from tkinter import ttk
 import math
 
 # TODO add type combo box for type (mook, NPC, PC)
@@ -16,16 +16,16 @@ weaponlist = []
 
 def loadbasemook(id, newmook):
     # complexity 20/15
-    mookentry = mookdb.find("id", str(id))[0]
+    mookentry = mookdb.find("", "id", str(id))[0]
     attributes = mookdb.describe()
     for index,attribute in enumerate(attributes):  
         if isinstance(mookentry[index], numbers.Number):
             value = mookentry[index]
             if attribute[0] == "mook_type":
-                temptype = mooktypedb.find("id", str(value))
+                temptype = mooktypedb.find("", "id", value)
                 newmook.mooktype = temptype[0][1]
             if attribute[0] == "type" and value != "1":
-                temptype = typedb.find("id", str(value))
+                temptype = typedb.find("", "id", str(value))
                 newmook.mooktype = temptype[0][1]
             if attribute[0] == "rep":
                 newmook.rep = mookentry[index]
@@ -39,10 +39,10 @@ def loadbasemook(id, newmook):
     return newmook
 
 def loadmookarmour(id, newmook):
-    headarm = mookheadarmourdb.find("mookid", str(id))
-    harmourtype = armourdb.find("id", str(headarm[0][2]))
-    bodyarm = mookbodyarmourdb.find("mookid", str(id))
-    barmourtype = armourdb.find("id", str(bodyarm[0][2]))
+    headarm = mookheadarmourdb.find("", "mookid", str(id))
+    harmourtype = armourdb.find("", "id", str(headarm[0][2]))
+    bodyarm = mookbodyarmourdb.find("", "mookid", str(id))
+    barmourtype = armourdb.find("", "id", str(bodyarm[0][2]))
     if headarm[0][3] == "y":
         headsp = int(harmourtype[0][2]) + 1
         headarmourname = "(TUp) " + harmourtype[0][1]
@@ -61,7 +61,7 @@ def loadmookarmour(id, newmook):
     return newmook
 
 def loadmookstats(id, newmook):
-    stats = mookstatdb.find("mookid", str(id))
+    stats = mookstatdb.find("", "mookid", str(id))
     stattitles = statsdb.find()
     mookstats = {}
     for index,stat in enumerate(stats):
@@ -84,7 +84,7 @@ def loadmookweapons(id, newmook):
     # complexity 22/15
     weapontypes = weapondb.find()
     qualitytypes = weaponqualitydb.find()
-    weapons = mookweapondb.find("mookid", str(id))
+    weapons = mookweapondb.find("", "mookid", str(id))
     weaponlist = []
     for index, weapon in enumerate(weapons):
         for weapontype in weapontypes:
@@ -102,7 +102,7 @@ def loadmookweapons(id, newmook):
 def loadmookskills(id, newmook):
     mookskills = {}
     skilltitles = skilldb.find()
-    skills = mookskilldb.find("mookid", str(id))
+    skills = mookskilldb.find("", "mookid", str(id))
     for index,skill in enumerate(skills):
         for skilltitle in skilltitles:
             if skilltitle[0] == skill[2]:
@@ -121,7 +121,7 @@ def loadmookskills(id, newmook):
 def loadmookequipment(id, newmook):
     # complexity 16/15
     equipmenttable = equipmentdb.find()
-    equipment = mookequipmentdb.find("mookid", str(id))
+    equipment = mookequipmentdb.find("", "mookid", str(id))
     mookequipment = []
     for index, equipment in enumerate(equipment):
         for equipmenttitle in equipmenttable:
@@ -138,7 +138,7 @@ def loadmookequipment(id, newmook):
 def loadmookcyberwear(id, newmook):
     # complexity 16/15
     cyberweartable = cyberweardb.find()
-    cyberwear = mookcyberweardb.find("mookid", str(id))
+    cyberwear = mookcyberweardb.find("", "mookid", str(id))
     mookcyberwear = []
     for index, cyberwear in enumerate(cyberwear):
         for cyberweartitle in cyberweartable:
@@ -240,7 +240,7 @@ def get_weapons(*arg):
     strippoor = tempweaponname.lstrip("Poor Quality ")
     weaponname = strippoor.lstrip("Excelent Quality ")
     if tempweaponname != "":
-        weaponprofile = weapondb.find("name", weaponname)[0]
+        weaponprofile = weapondb.find("", "name", weaponname)[0]
         rof_label['text'] = weaponprofile[3]
         damage_label['text'] = weaponprofile[2] + "D6"
     else:
@@ -477,11 +477,8 @@ mookcyberweardb = orm.orm("cpr.mook_cyberwear")
 statsdb = orm.orm("cpr.stats")
 mooks = []
 # fill array
-mooktable = mookdb.find("type", "1")
-# mooktable = dbt.findall(MOOKDB)
+mooktable = mookdb.find("","type", "1")
 
-# for index,entry in enumerate(mooktable):
-#     mooks.append(loadmooks(index+1))
 for i in range(len(mooktable)):
     mooks.append(loadmooks(mooktable[i][0]))
 # weapon combobox
