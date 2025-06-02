@@ -1,110 +1,134 @@
-# Program to add and track initative values for Cyberpunk Red
+# Program to add, track, and remove initiative values for Cyberpunk Red
 
 import tkinter as tk
-from tkinter import ttk 
+from tkinter import ttk
 import random
 
-def initaliseinitatives(initativelist):
-    # method to initialise initative array
+def initialize_initiatives(initiative_list):
     for _ in range(35):
-        initativelist.append("empty")
-    return initativelist
+        initiative_list.append("empty")
+    return initiative_list
 
-def reverselist(initativelist):
-    # method to reverse the list
-    newlist = initativelist[:: -1]
-    return newlist
+def reverse_list(initiative_list):
+    return initiative_list[::-1]
 
-def moveup(initativelist, roll, name):
-    # method to resolve moving an initative position after a clash
-    if initativelist[roll] == "empty":
-        initativelist[roll] = name
+def move_up(initiative_list, roll, name):
+    if initiative_list[roll] == "empty":
+        initiative_list[roll] = name
     else:
-        oldname = initativelist[roll]
-        initativelist[roll] = name
-        initativelist = moveup(initativelist, roll-1, oldname)
-    return initativelist
+        old_name = initiative_list[roll]
+        initiative_list[roll] = name
+        initiative_list = move_up(initiative_list, roll - 1, old_name)
+    return initiative_list
 
-def filllistbox(initativelist):
-    # method to fill the listbox
-    listbox.delete(0,'end')
-    newlist = []
-    newlist = reverselist(initativelist)
-    index = 0
-    for x in newlist:
-        if (x != "empty"): 
-            listbox.insert(index,x)
-            index += 1
-
-def printlist(initativelist):
-    # method to print the list for debug purposes
-    for x in initativelist:
-        print(x)
+def fill_listbox(initiative_list):
+    listbox.delete(0, 'end')
+    reversed_list = reverse_list(initiative_list)
+    for index, entry in enumerate(reversed_list):
+        if entry != "empty":
+            listbox.insert(index, entry)
 
 def items_selected(event):
-    # method to get selected item in the listbox and display in the textboxes
-    global initative_list
     selected_indices = listbox.curselection()
     selected_entity = [listbox.get(i) for i in selected_indices]
-    name_textbox.delete(0,'end')
-    name_textbox.insert('end', selected_entity)
-    for index,x in enumerate(initativelist):
-        if x == selected_entity[0]:
-            initative_textbox.delete(0,'end')
-            initative_textbox.insert('end', index)
+    if selected_entity:
+        name_textbox.delete(0, 'end')
+        name_textbox.insert('end', selected_entity[0])
+        for index, x in enumerate(initiative_list):
+            if x == selected_entity[0]:
+                initiative_textbox.delete(0, 'end')
+                initiative_textbox.insert('end', index)
+                break
 
-def addinitiativevalue(initativelist, roll, name):
-    # method to add a value to initative
-    if initativelist[roll] == "empty": 
-        initativelist[roll] = name
+def add_initiative_value(initiative_list, roll, name):
+    if initiative_list[roll] == "empty":
+        initiative_list[roll] = name
     else:
-        oldname = initativelist[roll]
-        order = random.randrange(1,3)
+        old_name = initiative_list[roll]
+        order = random.randrange(1, 3)
         if order == 1:
-            initativelist[roll] = name
-            initativelist = moveup(initativelist, roll-1, oldname)
-        else: 
-            initativelist = moveup(initativelist, roll-1, name)
-    filllistbox(initativelist)
-    return initativelist
+            initiative_list[roll] = name
+            initiative_list = move_up(initiative_list, roll - 1, old_name)
+        else:
+            initiative_list = move_up(initiative_list, roll - 1, name)
+    fill_listbox(initiative_list)
+    return initiative_list
 
-#declare initative list array
-initativelist = []
+def handle_add():
+    name = name_textbox.get().strip()
+    initiative_str = initiative_textbox.get().strip()
 
-# setup the tkinter window
+    if not name:
+        print("Error: Name cannot be empty.")
+        return
+
+    try:
+        roll = int(initiative_str)
+        if not 0 <= roll <= 34:
+            print("Error: Initiative must be between 0 and 34.")
+            return
+    except ValueError:
+        print("Error: Initiative must be an integer.")
+        return
+
+    add_initiative_value(initiative_list, roll, name)
+    name_textbox.delete(0, 'end')
+    initiative_textbox.delete(0, 'end')
+
+def remove_selected_entry():
+    selected_indices = listbox.curselection()
+    selected_entity = [listbox.get(i) for i in selected_indices]
+    if selected_entity:
+        name_to_remove = selected_entity[0]
+        for i, val in enumerate(initiative_list):
+            if val == name_to_remove:
+                initiative_list[i] = "empty"
+                break
+        fill_listbox(initiative_list)
+        name_textbox.delete(0, 'end')
+        initiative_textbox.delete(0, 'end')
+
+# Declare initiative list array
+initiative_list = []
+
+# Setup the tkinter window
 win = tk.Tk()
-win.geometry("500x220")
-win.title("Cyberpunk Initative Tracker")
-canvas = tk.Canvas(win, width=500, height=220, bg="white")
+win.geometry("500x260")
+win.title("Cyberpunk Initiative Tracker")
+canvas = tk.Canvas(win, width=500, height=260, bg="white")
 canvas.pack()
 
-#setup the listbox and scrollbar
-listbox = tk.Listbox(win, height = 10,  bg = "white", fg = "black", selectmode = "SINGLE")
+# Listbox and scrollbar
+listbox = tk.Listbox(win, height=10, bg="white", fg="black", selectmode="SINGLE")
 scrollbar = ttk.Scrollbar(win, orient=tk.VERTICAL, command=listbox.yview)
-# assign the scrollbar to the listbox
 listbox['yscrollcommand'] = scrollbar.set
-# assign the ListboxSelection command to the listbox
 listbox.bind('<<ListboxSelect>>', items_selected)
-# setup the labels and textboxes
+
+# Labels and textboxes
 name_label = tk.Label(win, text="Name:", font=("Arial", 12), bg='#fff', fg='#000')
 name_label.place(x=240, y=25)
 name_textbox = tk.Entry(win, font=("Arial", 12), bg='#fff', fg='#000')
 name_textbox.place(x=305, y=25)
-initative_label = tk.Label(win, text="Initative:", font=("Arial", 12), bg='#fff', fg='#000')
-initative_label.place(x=240, y=55)
-initative_textbox = tk.Entry(win, font=("Arial", 12), bg='#fff', fg='#000')
-initative_textbox.place(x=305, y=55)
-# setup the buttons
-add_button = tk.Button(win, text="Add", font=("Arial", 12), bg='#a32', fg='#fff', command=lambda: addinitiativevalue(initativelist, int(initative_textbox.get()), str(name_textbox.get())))
-add_button.place(x=240, y=85)
-# pack components
-listbox.pack()
-scrollbar.pack()
-# #place opponents in window
-listbox.place(x=5,y=5, height=200, width=200)
-scrollbar.place(x=200,y=5, height=200, width=20)
 
-# add initative values
-initativelist = initaliseinitatives(initativelist)
+initiative_label = tk.Label(win, text="Initiative:", font=("Arial", 12), bg='#fff', fg='#000')
+initiative_label.place(x=240, y=55)
+initiative_textbox = tk.Entry(win, font=("Arial", 12), bg='#fff', fg='#000')
+initiative_textbox.place(x=305, y=55)
 
+# Add button
+add_button = tk.Button(win, text="Add", font=("Arial", 12), bg='#a32', fg='#fff', command=handle_add)
+add_button.place(x=240, y=90)
+
+# Remove button
+remove_button = tk.Button(win, text="Remove", font=("Arial", 12), bg='#a32', fg='#fff', command=remove_selected_entry)
+remove_button.place(x=310, y=90)
+
+# Place components
+listbox.place(x=5, y=5, height=240, width=200)
+scrollbar.place(x=200, y=5, height=240, width=20)
+
+# Initialize initiative values
+initiative_list = initialize_initiatives(initiative_list)
+
+# Start GUI event loop
 win.mainloop()
