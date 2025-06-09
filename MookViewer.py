@@ -477,7 +477,7 @@ mookcyberweardb = orm.mysqlorm("cpr.mook_cyberwear")
 statsdb = orm.mysqlorm("cpr.stats")
 mooks = []
 # fill array
-mooktable = mookdb.find("","type", "1")
+mooktable = mookdb.find("","type", "1", "name")
 
 for i in range(len(mooktable)):
     mooks.append(loadmooks(mooktable[i][0]))
