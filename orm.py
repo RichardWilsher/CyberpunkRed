@@ -1,6 +1,7 @@
 import json
 import mysql.connector
 from mysql.connector import Error
+import re
 
 # TODO: use describe to whitelist column names
 
@@ -12,8 +13,36 @@ def ensure_connection(method):
         return method(self, *args, **kwargs)
     return wrapper
 
-class orm:
-    def __init__(self, table, settings_path=r'E:\Settings\dbsettings.json'):
+class mysqlorm:
+    class DatabaseConnectionError(Exception):
+        """Raised when there is an error connecting to the database."""
+        pass
+
+    class SchemaError(Exception):
+        """Raised when schema-related operations fail."""
+    pass
+
+    class TableError(Exception):
+        """Raised when table-related operations fail."""
+    pass
+
+    class QueryExecutionError(Exception):
+        """Raised when execution of a SQL query fails."""
+    pass
+
+    class InvalidIdentifierError(Exception):
+        """Raised when an invalid identifier (table/schema/column name) is used."""
+    pass
+
+    @staticmethod
+    def is_valid_identifier(name):
+        """
+        Check if the provided name is a valid MySQL identifier.
+        Must start with a letter or underscore and contain only letters, numbers, or underscores.
+        """
+        return re.match(r'^[A-Za-z_][A-Za-z0-9_]*$', name) is not None
+
+    def __init__(self, table=None, settings_path=r'E:\Settings\dbsettings.json'):
         try:
             with open(settings_path) as json_file:
                 dbsettings = json.load(json_file)
@@ -26,9 +55,7 @@ class orm:
                 self.cursor = self.connection.cursor(buffered=True)
                 self.tablename = table
         except Error as e:
-            print(f"Error connecting to database: {e}")
-            self.connection = None
-            self.cursor = None
+            raise self.DatabaseConnectionError(f"Error connecting to database: {e}") from e
 
     def __enter__(self):
         return self
@@ -69,11 +96,8 @@ class orm:
                 self.cursor.execute(query)
             
             return self.cursor.fetchall()
-        except Error as e:
-            print("Query:", query)
-            print("Value:", value)
-            print(f"Error in find: {e}")
-            return []
+        except mysql.connection.error as e:
+            raise self.QueryExecutionError(f"Error executing query in 'find': {e}") from e
         
     @ensure_connection
     def describe(self):
@@ -145,6 +169,63 @@ class orm:
         except Error as e:
             print(f"Error in get_tables: {e}")
             return []
+        
+    @ensure_connection
+    def check_schema(self, schema):
+        try:
+            self.cursor.execute(f"USE {schema};")
+            return True
+        except Error as e:
+            # print(f"Error in check_schema: {e}")
+            return False
+        
+    @ensure_connection
+    def check_table(self, table, schema):
+        try:
+            self.cursor.execute(f"DESCRIBE {schema}.{table};")
+            return True
+        except Error as e:
+            return False
+
+    @ensure_connection
+    def create_schema(self, schema):
+        try:
+            if not self.is_valid_identifier(schema):
+                raise ValueError(f"Invalid schema name: {schema}")
+            else:
+                self.cursor.execute(f"CREATE SCHEMA IF NOT EXISTS {schema};")
+                return True
+        except (mysql.connector.Error, ValueError) as e:
+            raise self.SchemaError(f"Error creating schema: {e}") from e
+            return False
+
+    @ensure_connection
+    def create_table(self, table, schema, columns):
+        """
+        Create a table in the given schema with the specified columns if it does not already exist.
+
+        Args:
+            table (str): Table name.
+            schema (str): Schema (database) name.
+            columns (str): Column definitions as a raw SQL string.
+
+        Returns:
+            bool: True if table creation succeeded or already exists, False otherwise.
+        """
+        try:
+            if not self.is_valid_identifier(schema):
+                raise self.InvalidIdentifierError(f"Invalid schema name: {schema}")
+            if not self.is_valid_identifier(table):
+                raise self.InvalidIdentifierError(f"Invalid schema name: {schema}")
+
+            query = f"CREATE TABLE IF NOT EXISTS {schema}.{table} ({columns});"
+            self.cursor.execute(query)
+            return True
+        
+        except (mysql.connector.Error, ValueError) as e:
+            raise self.TableError(f"Error creating table: {e}") from e
+            return False
+
 
     def close(self):
         if self.connection:
